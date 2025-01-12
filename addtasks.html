@@ -36,8 +36,13 @@
             font-weight: bold;
         }
         .content {
-            padding: 20px;
-        }
+    padding: 20px;
+    padding-bottom: 80px; /* Added padding to avoid overlap with footer */
+    flex: 1;
+    overflow-y: auto; /* Allow scrolling if needed */
+    overflow-x: hidden;
+}
+
         .form-group {
             padding: 15px 0;
             display: flex;
@@ -94,6 +99,13 @@
             background-color: #007BFF;
             color: white;
         }
+
+        @media (max-width: 600px) {
+    .date-display {
+        width: 25%;  /* Ensure it's taking full width on mobile */
+        font-size: 14px; /* Adjust font size if needed */
+    }
+}
         .date-input {
             display: none;
         }
@@ -167,7 +179,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .footer {
+     .footer {
             position: fixed;
             bottom: 10px; /* Moved the footer up by 20px */
             width: 100%;
@@ -624,13 +636,15 @@ closeRewardButton.addEventListener("click", () => {
         const dateInput = document.getElementById("taskDate");
 
         const flatpickrInstance = flatpickr(dateInput, {
-            dateFormat: "Y-m-d",
-            defaultDate: "today",
-            onChange: function(selectedDates, dateStr) {
-                dateDisplay.textContent = dateStr; // Update display
-            },
-            positionElement: dateDisplay, // Ensure correct positioning
-        });
+    dateFormat: "m-d-Y",
+    defaultDate: "today",
+    onChange: function(selectedDates, dateStr) {
+        dateDisplay.textContent = dateStr; // Update display
+    },
+    positionElement: dateDisplay, // Ensure correct positioning
+    disableMobile: false, // Ensure it works for mobile
+});
+
 
         dateDisplay.addEventListener("click", () => {
             flatpickrInstance.open();
