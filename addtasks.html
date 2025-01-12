@@ -631,29 +631,31 @@ closeRewardButton.addEventListener("click", () => {
         setupModal('repeatModal', 'selectRepeat', 'repeatSelection');
         setupModal('settingsModal', 'selectSettings', 'settingsSelection');
 
-        // Date picker logic
+       // Date picker logic
 const dateDisplay = document.getElementById("dateDisplay");
 const dateInput = document.getElementById("taskDate");
 
+// Initialize flatpickr
 const flatpickrInstance = flatpickr(dateInput, {
-    dateFormat: "m-d-Y", // Ensure proper date format
+    dateFormat: "m-d-Y",  // Set date format
     defaultDate: "today", // Set default date to today
     onChange: function(selectedDates, dateStr) {
         dateDisplay.textContent = dateStr; // Update the display with the selected date
     },
-    positionElement: dateDisplay, // Ensure correct positioning
-    disableMobile: false, // Ensure it works on mobile devices
+    positionElement: dateDisplay, // Ensure correct positioning of calendar
+    disableMobile: false, // Allow date picker on mobile devices
 });
 
-// Add click listener to the dateDisplay element
-dateDisplay.addEventListener("click", () => {
-    flatpickrInstance.open();
-});
+// Handle the click event on dateDisplay
+function openDatePicker() {
+    flatpickrInstance.open();  // Open the calendar popup
+}
 
-// To handle touch events on mobile and trigger date picker if needed
-dateDisplay.addEventListener('touchstart', () => {
-    flatpickrInstance.open();
-});
+// Open the date picker when the dateDisplay button is clicked (desktop)
+dateDisplay.addEventListener("click", openDatePicker);
+
+// Add touchstart listener for mobile support
+dateDisplay.addEventListener("touchstart", openDatePicker);
 
 
         // Reminder toggle logic
