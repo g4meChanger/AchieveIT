@@ -275,6 +275,20 @@
             border-radius: 5px;
             font-size: 16px;
         }
+
+        .selected {
+    background-color: #007BFF;  /* Blue background */
+    color: white;  /* White text color */
+    font-weight: bold;  /* Bold text for better visibility */
+}
+
+/* Ensure the selected items are highlighted with blue background */
+.modal-content ul li.selected {
+    background-color: #007BFF !important;  /* Blue background */
+    color: white !important;  /* White text color */
+    font-weight: bold;  /* Bold text for better visibility */
+}
+
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -459,6 +473,19 @@
                 .btn-cancel:active {
                     transform: translateY(0);
                 }
+
+                /* Make sure the hidden input is displayed and accessible */
+#taskDate {
+    display: block; /* Make sure the date input is accessible */
+    opacity: 0; /* Hidden, but still functional */
+    position: absolute; /* Position it off the screen */
+}
+
+/* The actual display element */
+#dateDisplay {
+    cursor: pointer;
+}
+
             </style>
             
             <button type="submit" class="save-btn">Save</button>
@@ -541,27 +568,36 @@
 
         // Populate the modal with users
         users.forEach(user => {
-            const li = document.createElement("li");
-            li.textContent = user;
-            li.dataset.value = user;
-            li.addEventListener("click", () => {
-                // Add/remove user from the assignedTo list
-                let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
-                const userIndex = assignedToUsers.indexOf(user);
-                if (userIndex === -1) {
-                    assignedToUsers.push(user);
-                } else {
-                    assignedToUsers.splice(userIndex, 1);
-                }
-                assignedToSelection.value = assignedToUsers.join(', ');
-                if (assignedToUsers.length > 0) {
-                      assignedToDisplay.textContent = `Assigned to: ${assignedToUsers.join(', ')}`;
-                 } else {
-                       assignedToDisplay.textContent = 'Select users'; // Revert text when no users are selected
-                 }
-             });
-              userList.appendChild(li);
-        });
+    const li = document.createElement("li");
+    li.textContent = user;
+    li.dataset.value = user;
+    
+    // Add event listener to toggle the selected state
+    li.addEventListener("click", () => {
+        // Toggle the selected class
+        li.classList.toggle("selected");
+        
+        // Add/remove user from the assignedTo list
+        let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
+        const userIndex = assignedToUsers.indexOf(user);
+        if (userIndex === -1) {
+            assignedToUsers.push(user);
+        } else {
+            assignedToUsers.splice(userIndex, 1);
+        }
+        assignedToSelection.value = assignedToUsers.join(', ');
+
+        // Update the display text based on selected users
+        if (assignedToUsers.length > 0) {
+            assignedToDisplay.textContent = `Assigned to: ${assignedToUsers.join(', ')}`;
+        } else {
+            assignedToDisplay.textContent = 'Select users'; // Revert text when no users are selected
+        }
+    });
+    
+    userList.appendChild(li);
+});
+
 
         // Show the modal when the "Assigned to" section is clicked
         assignedToDisplay.addEventListener("click", () => {
@@ -632,11 +668,11 @@ closeRewardButton.addEventListener("click", () => {
         setupModal('repeatModal', 'selectRepeat', 'repeatSelection');
         setupModal('settingsModal', 'selectSettings', 'settingsSelection');
 
-       // Date picker logic
+      // Date picker logic
 const dateDisplay = document.getElementById("dateDisplay");
 const dateInput = document.getElementById("taskDate");
 
-// Initialize flatpickr
+// Initialize flatpickr with a few adjustments
 const flatpickrInstance = flatpickr(dateInput, {
     dateFormat: "m-d-Y",  // Set date format
     defaultDate: "today", // Set default date to today
@@ -647,20 +683,10 @@ const flatpickrInstance = flatpickr(dateInput, {
     disableMobile: false, // Allow date picker on mobile devices
 });
 
-// Handle the click event on dateDisplay
-function openDatePicker() {
+// Open the date picker when the dateDisplay button is clicked (desktop or mobile)
+dateDisplay.addEventListener("click", function() {
     flatpickrInstance.open();  // Open the calendar popup
-}
-
-// Open the date picker when the dateDisplay button is clicked (desktop)
-dateDisplay.addEventListener("click", openDatePicker);
-
-// Add touchstart listener for mobile support
-dateDisplay.addEventListener("touchstart", function(e) {
-    e.preventDefault();  // Prevent default action for touch event
-    flatpickrInstance.open();  // Open the calendar
 });
-
 
 
         // Reminder toggle logic
@@ -773,6 +799,8 @@ document.getElementById("addTaskForm").addEventListener("submit", function (even
         // Redirect to tasks.html
         window.location.href = "tasks.html";
 });
+
+
     </script>
 </body>
 </html>

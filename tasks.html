@@ -50,24 +50,24 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    background-color: #f1f1f1;
-    padding: 10px 0;
-    box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.1);
-}
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background-color: #f1f1f1;
+            padding: 10px 0;
+            box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.1);
+        }
 
-.footer a {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3px 0 8px 0; /* Reduce top padding and keep the bottom padding */
-}
+        .footer a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3px 0 8px 0; /* Reduce top padding and keep the bottom padding */
+        }
         .footer a:hover i {
             color: #007BFF; /* Hover effect for icon */
         }
@@ -231,7 +231,17 @@
             tasks.forEach((task, index) => {
                 const taskDiv = document.createElement("div");
                 taskDiv.className = "task-item";
-                taskDiv.textContent = `${task.title} - Current turn: ${task.turn || task.users[Math.floor(Math.random() * task.users.length)]}`;
+                
+                // If no current turn is set, pick a random user for the current turn
+                if (!task.turn) {
+                    const randomUser = task.users[Math.floor(Math.random() * task.users.length)];
+                    task.turn = randomUser;  // Set the initial turn
+                    saveTask(index, task);  // Save the task with the new turn
+                }
+
+                // Display the task title and current turn
+                taskDiv.textContent = `${task.title} - Current turn: ${task.turn}`;
+
                 let isSwiping = false;
                 let swipedLeft = false; // Flag to track if the delete button is visible
                 let startX = 0;
@@ -315,6 +325,13 @@
 
                 taskList.appendChild(taskDiv);
             });
+        }
+
+        // Save task data (used to update the turn)
+        function saveTask(index, task) {
+            const tasks = JSON.parse(localStorage.getItem("familyApp_tasks")) || [];
+            tasks[index] = task;
+            localStorage.setItem("familyApp_tasks", JSON.stringify(tasks));
         }
 
         // Delete task from localStorage
