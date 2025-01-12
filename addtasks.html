@@ -632,23 +632,29 @@ closeRewardButton.addEventListener("click", () => {
         setupModal('settingsModal', 'selectSettings', 'settingsSelection');
 
         // Date picker logic
-        const dateDisplay = document.getElementById("dateDisplay");
-        const dateInput = document.getElementById("taskDate");
+const dateDisplay = document.getElementById("dateDisplay");
+const dateInput = document.getElementById("taskDate");
 
-        const flatpickrInstance = flatpickr(dateInput, {
-    dateFormat: "m-d-Y",
-    defaultDate: "today",
+const flatpickrInstance = flatpickr(dateInput, {
+    dateFormat: "m-d-Y", // Ensure proper date format
+    defaultDate: "today", // Set default date to today
     onChange: function(selectedDates, dateStr) {
-        dateDisplay.textContent = dateStr; // Update display
+        dateDisplay.textContent = dateStr; // Update the display with the selected date
     },
     positionElement: dateDisplay, // Ensure correct positioning
-    disableMobile: false, // Ensure it works for mobile
+    disableMobile: false, // Ensure it works on mobile devices
 });
 
+// Add click listener to the dateDisplay element
+dateDisplay.addEventListener("click", () => {
+    flatpickrInstance.open();
+});
 
-        dateDisplay.addEventListener("click", () => {
-            flatpickrInstance.open();
-        });
+// To handle touch events on mobile and trigger date picker if needed
+dateDisplay.addEventListener('touchstart', () => {
+    flatpickrInstance.open();
+});
+
 
         // Reminder toggle logic
         const reminderToggle = document.getElementById('taskReminder');
