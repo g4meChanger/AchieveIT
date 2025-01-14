@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Album</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .album {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+            border: 2px solid black;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .add-album-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">Photo Album</div>
+    </div>
+
+    <button class="add-album-btn" onclick="createAlbum()">+ Add Album</button>
+
+    <div class="album-grid" id="albumGrid">
+        <!-- Albums will appear here -->
+    </div>
+
+    <script>
+        function createAlbum() {
+            const albumName = prompt('Enter album name:');
+            if (albumName) {
+                const albumGrid = document.getElementById('albumGrid');
+                const album = document.createElement('div');
+                album.className = 'album';
+                album.textContent = albumName;
+                album.onclick = () => alert(`Opening album: ${albumName}`);
+                albumGrid.appendChild(album);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
