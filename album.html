@@ -28,8 +28,8 @@
 
         .photo-item {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .photo {
@@ -89,6 +89,13 @@
         .close-btn:hover {
             color: #ff5757;
         }
+
+        .save-instructions {
+            color: white;
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +110,7 @@
     <div id="fullscreenOverlay" class="fullscreen-overlay">
         <button class="close-btn" onclick="closeFullscreen()">×</button>
         <img id="fullscreenImage" src="" alt="Fullscreen View">
+        <p class="save-instructions">Long-press on the photo to delete it from the album.</p>
     </div>
 
     <script>
@@ -110,18 +118,27 @@
         const albumName = params.get('album');
         const albums = JSON.parse(localStorage.getItem('albums')) || {};
         const photos = albums[albumName] || [];
+        let longPressTimeout;
 
         document.getElementById('albumTitle').textContent = albumName;
 
         function renderPhotos() {
             const photoGrid = document.getElementById('photoGrid');
             photoGrid.innerHTML = '';
-            photos.forEach(photoSrc => {
+            photos.forEach((photoSrc, index) => {
                 const photoItem = document.createElement('div');
                 photoItem.className = 'photo-item';
                 photoItem.innerHTML = `
-                    <img src="${photoSrc}" class="photo" onclick="showFullscreen('${photoSrc}')">
-                    <a href="${photoSrc}" download>Download</a>
+                    <img 
+                        src="${photoSrc}" 
+                        class="photo" 
+                        ontouchstart="startLongPress(${index})" 
+                        ontouchend="cancelLongPress()" 
+                        onmousedown="startLongPress(${index})" 
+                        onmouseup="cancelLongPress()" 
+                        onmouseleave="cancelLongPress()" 
+                        onclick="showFullscreen('${photoSrc}')"
+                    >
                 `;
                 photoGrid.appendChild(photoItem);
             });
@@ -147,6 +164,25 @@
         function closeFullscreen() {
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
             fullscreenOverlay.style.display = 'none';
+        }
+
+        function startLongPress(index) {
+            longPressTimeout = setTimeout(() => {
+                deletePhoto(index);
+            }, 800); // Trigger long-press after 800ms
+        }
+
+        function cancelLongPress() {
+            clearTimeout(longPressTimeout); // Cancel long-press if the user releases early
+        }
+
+        function deletePhoto(index) {
+            if (confirm('Do you want to delete this photo?')) {
+                photos.splice(index, 1); // Remove photo from the array
+                albums[albumName] = photos; // Update album in localStorage
+                localStorage.setItem('albums', JSON.stringify(albums));
+                renderPhotos(); // Re-render the photo grid
+            }
         }
 
         renderPhotos();
