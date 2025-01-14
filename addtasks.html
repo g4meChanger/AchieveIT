@@ -670,15 +670,17 @@ closeRewardButton.addEventListener("click", () => {
 
       // Date picker logic
         // Initialize Flatpickr on the hidden date input
+// Initialize Flatpickr on the hidden date input
 flatpickr("#taskDate", {
-    altInput: true,
-    altFormat: "F j, Y", // Display format
-    dateFormat: "Y-m-d", // Value format (for storing in hidden input)
+    dateFormat: "m-d-Y", // Internal value format
     defaultDate: "today",
     onChange: function(selectedDates, dateStr, instance) {
         // Update the visible date display
         document.getElementById("dateDisplay").textContent = dateStr;
-    }
+    },
+    positionElement: document.getElementById("dateDisplay"), // Attach the calendar to dateDisplay
+    static: false, // Ensure it is dynamic and not fixed in one spot
+    appendTo: document.body // Ensure proper positioning
 });
 
 // Add a click event to the visible date display to open the date picker
