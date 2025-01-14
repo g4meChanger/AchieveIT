@@ -38,12 +38,58 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            position: relative;
         }
         .add-album-btn {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .close-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -59,7 +105,20 @@
         <!-- Albums will appear here -->
     </div>
 
+    <div class="modal" id="albumModal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="albumTitle"></h2>
+            <input type="file" id="photoInput" accept="image/*" multiple onchange="uploadPhotos()" />
+            <div class="photo-grid" id="photoGrid">
+                <!-- Photos will be displayed here -->
+            </div>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
     <script>
+        let albums = {};
+
         function createAlbum() {
             const albumName = prompt('Enter album name:');
             if (albumName) {
@@ -67,12 +126,60 @@
                 const album = document.createElement('div');
                 album.className = 'album';
                 album.textContent = albumName;
-                album.onclick = () => alert(`Opening album: ${albumName}`);
+                album.onclick = () => openAlbum(albumName);
                 albumGrid.appendChild(album);
+
+                // Create an entry for this album
+                albums[albumName] = [];
             }
+        }
+
+        function openAlbum(albumName) {
+            const modal = document.getElementById('albumModal');
+            const albumTitle = document.getElementById('albumTitle');
+            const photoGrid = document.getElementById('photoGrid');
+
+            // Set modal title and clear photo grid
+            albumTitle.textContent = albumName;
+            photoGrid.innerHTML = '';
+
+            // Display photos for the album
+            albums[albumName].forEach(photoSrc => {
+                const img = document.createElement('img');
+                img.src = photoSrc;
+                img.className = 'photo';
+                photoGrid.appendChild(img);
+            });
+
+            modal.style.display = 'flex';
+
+            // Store the current album name in the modal
+            modal.dataset.currentAlbum = albumName;
+        }
+
+        function uploadPhotos() {
+            const photoInput = document.getElementById('photoInput');
+            const modal = document.getElementById('albumModal');
+            const photoGrid = document.getElementById('photoGrid');
+            const albumName = modal.dataset.currentAlbum;
+
+            Array.from(photoInput.files).forEach(file => {
+                const photoSrc = URL.createObjectURL(file);
+                albums[albumName].push(photoSrc);
+
+                const img = document.createElement('img');
+                img.src = photoSrc;
+                img.className = 'photo';
+                photoGrid.appendChild(img);
+            });
+
+            photoInput.value = '';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('albumModal');
+            modal.style.display = 'none';
         }
     </script>
 </body>
 </html>
-
-
