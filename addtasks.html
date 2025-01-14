@@ -329,7 +329,7 @@
             <div class="form-group">
                 <label>Date</label>
                 <div id="dateDisplay" class="date-display">Today</div>
-                <input type="text" id="taskDate" class="date-input">
+                <input type="text" id="taskDate" style="display:none;" />
             </div>
             <div class="form-group">
                 <label>Reminder</label>
@@ -669,24 +669,23 @@ closeRewardButton.addEventListener("click", () => {
         setupModal('settingsModal', 'selectSettings', 'settingsSelection');
 
       // Date picker logic
-const dateDisplay = document.getElementById("dateDisplay");
-const dateInput = document.getElementById("taskDate");
-
-// Initialize flatpickr with a few adjustments
-const flatpickrInstance = flatpickr(dateInput, {
-    dateFormat: "m-d-Y",  // Set date format
-    defaultDate: "today", // Set default date to today
-    onChange: function(selectedDates, dateStr) {
-        dateDisplay.textContent = dateStr; // Update the display with the selected date
-    },
-    positionElement: dateDisplay, // Ensure correct positioning of calendar
-    disableMobile: false, // Allow date picker on mobile devices
+        // Initialize Flatpickr on the hidden date input
+flatpickr("#taskDate", {
+    altInput: true,
+    altFormat: "F j, Y", // Display format
+    dateFormat: "Y-m-d", // Value format (for storing in hidden input)
+    defaultDate: "today",
+    onChange: function(selectedDates, dateStr, instance) {
+        // Update the visible date display
+        document.getElementById("dateDisplay").textContent = dateStr;
+    }
 });
 
-// Open the date picker when the dateDisplay button is clicked (desktop or mobile)
-dateDisplay.addEventListener("click", function() {
-    flatpickrInstance.open();  // Open the calendar popup
+// Add a click event to the visible date display to open the date picker
+document.getElementById("dateDisplay").addEventListener("click", () => {
+    document.getElementById("taskDate")._flatpickr.open();
 });
+
 
 
         // Reminder toggle logic
@@ -799,6 +798,14 @@ document.getElementById("addTaskForm").addEventListener("submit", function (even
         // Redirect to tasks.html
         window.location.href = "tasks.html";
 });
+
+
+
+
+
+
+
+
 
 
     </script>
