@@ -177,9 +177,9 @@
                     <img 
                         src="${photoSrc}" 
                         class="photo" 
-                        ontouchstart="startLongPress(${index})" 
+                        ontouchstart="startLongPress(${index}, event)" 
                         ontouchend="cancelLongPress()" 
-                        onmousedown="startLongPress(${index})" 
+                        onmousedown="startLongPress(${index}, event)" 
                         onmouseup="cancelLongPress()" 
                         onmouseleave="cancelLongPress()" 
                         onclick="showFullscreen('${photoSrc}')"
@@ -211,7 +211,8 @@
             fullscreenOverlay.style.display = 'none';
         }
 
-        function startLongPress(index) {
+        function startLongPress(index, event) {
+            event.preventDefault(); // Prevent iOS system menu
             longPressTimeout = setTimeout(() => {
                 deletePhoto(index);
             }, 800); // Trigger long-press after 800ms
