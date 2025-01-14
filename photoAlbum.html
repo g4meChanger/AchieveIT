@@ -9,7 +9,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
+
         .header {
             display: flex;
             align-items: center;
@@ -17,16 +21,29 @@
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .title {
             font-size: 20px;
             font-weight: bold;
         }
+
+        .content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: 150px;
+            gap: 20px;
+            padding: 20px;
+            justify-items: center;
+        }
+        
         .album-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
+
         .album {
             display: flex;
             justify-content: center;
@@ -40,63 +57,47 @@
             cursor: pointer;
             position: relative;
         }
+
         .add-album-btn {
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
         }
-        .modal {
+
+        .footer {
             position: fixed;
-            top: 0;
-            left: 0;
+            bottom: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
+            background-color: #f1f1f1;
+            padding: 4px 0;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            padding: 3px 0 8px 0;
         }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
+
+        .footer a:hover img {
+            filter: brightness(0.8);
+        }
+
+        .footer-icon {
             text-align: center;
-        }
-        .modal-content h2 {
-            margin-top: 0;
-        }
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .photo {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        .close-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .close-btn:hover {
-            background-color: #0056b3;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <div class="title">Photo Album</div>
+        <div class="title">Photo Challenge</div>
     </div>
 
     <button class="add-album-btn" onclick="createAlbum()">+ Add Album</button>
@@ -105,81 +106,45 @@
         <!-- Albums will appear here -->
     </div>
 
-    <div class="modal" id="albumModal" style="display: none;">
-        <div class="modal-content">
-            <h2 id="albumTitle"></h2>
-            <input type="file" id="photoInput" accept="image/*" multiple onchange="uploadPhotos()" />
-            <div class="photo-grid" id="photoGrid">
-                <!-- Photos will be displayed here -->
-            </div>
-            <button class="close-btn" onclick="closeModal()">Close</button>
-        </div>
+    <div class="footer">
+        <a href="fun.html" class="footer-icon">
+            <img src="BackBtn.png" alt="Home" style="width: 40px; height: 40px;" />
+        </a>
     </div>
 
     <script>
-        let albums = {};
+        const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
         function createAlbum() {
             const albumName = prompt('Enter album name:');
-            if (albumName) {
-                const albumGrid = document.getElementById('albumGrid');
-                const album = document.createElement('div');
-                album.className = 'album';
-                album.textContent = albumName;
-                album.onclick = () => openAlbum(albumName);
-                albumGrid.appendChild(album);
-
-                // Create an entry for this album
+            if (albumName && !albums[albumName]) {
                 albums[albumName] = [];
+                localStorage.setItem('albums', JSON.stringify(albums));
+                renderAlbums();
+            } else if (albums[albumName]) {
+                alert('Album already exists!');
+            } else {
+                alert('Invalid album name.');
             }
         }
 
-        function openAlbum(albumName) {
-            const modal = document.getElementById('albumModal');
-            const albumTitle = document.getElementById('albumTitle');
-            const photoGrid = document.getElementById('photoGrid');
-
-            // Set modal title and clear photo grid
-            albumTitle.textContent = albumName;
-            photoGrid.innerHTML = '';
-
-            // Display photos for the album
-            albums[albumName].forEach(photoSrc => {
-                const img = document.createElement('img');
-                img.src = photoSrc;
-                img.className = 'photo';
-                photoGrid.appendChild(img);
+        function renderAlbums() {
+            const albumGrid = document.getElementById('albumGrid');
+            albumGrid.innerHTML = '';
+            Object.keys(albums).forEach(albumName => {
+                const album = document.createElement('div');
+                album.className = 'album';
+                album.textContent = albumName;
+                album.onclick = () => openAlbumPage(albumName);
+                albumGrid.appendChild(album);
             });
-
-            modal.style.display = 'flex';
-
-            // Store the current album name in the modal
-            modal.dataset.currentAlbum = albumName;
         }
 
-        function uploadPhotos() {
-            const photoInput = document.getElementById('photoInput');
-            const modal = document.getElementById('albumModal');
-            const photoGrid = document.getElementById('photoGrid');
-            const albumName = modal.dataset.currentAlbum;
-
-            Array.from(photoInput.files).forEach(file => {
-                const photoSrc = URL.createObjectURL(file);
-                albums[albumName].push(photoSrc);
-
-                const img = document.createElement('img');
-                img.src = photoSrc;
-                img.className = 'photo';
-                photoGrid.appendChild(img);
-            });
-
-            photoInput.value = '';
+        function openAlbumPage(albumName) {
+            window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
         }
 
-        function closeModal() {
-            const modal = document.getElementById('albumModal');
-            modal.style.display = 'none';
-        }
+        renderAlbums();
     </script>
 </body>
 </html>

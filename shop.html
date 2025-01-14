@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family App</title>
     <style>
-        body {
+             body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -30,47 +30,48 @@
             font-weight: bold;
         }
         .content {
-            flex: 1; /* Allow content to take up the remaining space */
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            grid-auto-rows: 150px; /* Row height */
+            gap: 20px; /* Space between grid items */
             padding: 20px;
-            overflow-y: auto;
-            background-color: white;
-            position: relative;
+            justify-items: center;
         }
 
         .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            background-color: #f1f1f1;
-            padding: 10px 0;
-            box-shadow: 0 -3px 4px rgba(0, 0, 0, 0.1);
-        }
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #f1f1f1;
+    padding: 4px 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
 
-        .footer a {
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 3px 0 8px 0; /* Reduce top padding and keep the bottom padding */
-        }
-        .footer a:hover i {
-            color: #007BFF; /* Hover effect for icon */
-        }
-        .footer a:hover span {
-            color: #007BFF; /* Hover effect for text */
-        }
-        .footer-icon {
-            text-align: center;
-            font-size: 20px;
-        }
-        .footer-icon i {
-            display: block;
-            margin-bottom: 5px;
-        }
-
+.footer a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px 0 8px 0; /* Reduce top padding and keep the bottom padding */
+}
+.footer a:hover i {
+    color: #007BFF; /* Hover effect for icon */
+}
+.footer a:hover span {
+    color: #007BFF; /* Hover effect for text */
+}
+.footer-icon {
+    text-align: center;
+    font-size: 20px;
+}
+.footer-icon i {
+    display: block;
+    margin-bottom: 5px;
+}
     </style>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
@@ -81,11 +82,10 @@
         <div class="title">Family Name</div>
     </div>
 
-
     <div class="footer">
-        <a href="fun.html" class="footer-icon" aria-label="Home">
-            <i class="fas fa-home"></i>
-            <span>Back</span>
+        <a href="fun.html" class="footer-icon">
+            <img src="BackBtn.png" alt="Home" Style="width: 40px; height: 40px;" />
+            <span></span>
         </a>
     </div>
 
