@@ -64,6 +64,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            flex-direction: column;
         }
 
         .fullscreen-overlay img {
@@ -71,7 +72,7 @@
             max-height: 90%;
         }
 
-        .fullscreen-overlay:target {
+        .fullscreen-overlay.active {
             display: flex;
         }
 
@@ -90,11 +91,19 @@
             color: #ff5757;
         }
 
-        .save-instructions {
-            color: white;
+        .delete-btn {
+            margin-top: 20px;
             font-size: 16px;
-            margin-top: 10px;
-            text-align: center;
+            color: white;
+            background: red;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .delete-btn:hover {
+            background: darkred;
         }
 
         .footer {
@@ -148,7 +157,7 @@
     <div id="fullscreenOverlay" class="fullscreen-overlay">
         <button class="close-btn" onclick="closeFullscreen()">×</button>
         <img id="fullscreenImage" src="" alt="Fullscreen View">
-        <p class="save-instructions">Long-press on the photo to save it or delete it.</p>
+        <button class="delete-btn" onclick="deletePhotoFromFullscreen()">Delete Photo</button>
     </div>
 
     <div class="footer">
@@ -164,6 +173,7 @@
         const albums = JSON.parse(localStorage.getItem('albums')) || {};
         const photos = albums[albumName] || [];
         let longPressTimeout;
+        let currentPhotoIndex = null;
 
         document.getElementById('albumTitle').textContent = albumName;
 
@@ -177,12 +187,12 @@
                     <img 
                         src="${photoSrc}" 
                         class="photo" 
-                        ontouchstart="startLongPress(${index}, event)" 
+                        ontouchstart="startLongPress(${index})" 
                         ontouchend="cancelLongPress()" 
-                        onmousedown="startLongPress(${index}, event)" 
+                        onmousedown="startLongPress(${index})" 
                         onmouseup="cancelLongPress()" 
                         onmouseleave="cancelLongPress()" 
-                        onclick="showFullscreen('${photoSrc}')"
+                        onclick="showFullscreen(${index})"
                     >
                 `;
                 photoGrid.appendChild(photoItem);
@@ -199,35 +209,36 @@
             });
         });
 
-        function showFullscreen(photoSrc) {
+        function showFullscreen(index) {
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
             const fullscreenImage = document.getElementById('fullscreenImage');
-            fullscreenImage.src = photoSrc;
-            fullscreenOverlay.style.display = 'flex';
+            currentPhotoIndex = index;
+            fullscreenImage.src = photos[index];
+            fullscreenOverlay.classList.add('active');
         }
 
         function closeFullscreen() {
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
-            fullscreenOverlay.style.display = 'none';
+            fullscreenOverlay.classList.remove('active');
         }
 
-        function startLongPress(index, event) {
-            event.preventDefault(); // Prevent iOS system menu
+        function startLongPress(index) {
             longPressTimeout = setTimeout(() => {
-                deletePhoto(index);
-            }, 800); // Trigger long-press after 800ms
+                alert("Hold detected, release to open system menu.");
+            }, 800);
         }
 
         function cancelLongPress() {
             clearTimeout(longPressTimeout); // Cancel long-press if the user releases early
         }
 
-        function deletePhoto(index) {
+        function deletePhotoFromFullscreen() {
             if (confirm('Do you want to delete this photo?')) {
-                photos.splice(index, 1); // Remove photo from the array
+                photos.splice(currentPhotoIndex, 1); // Remove photo from the array
                 albums[albumName] = photos; // Update album in localStorage
                 localStorage.setItem('albums', JSON.stringify(albums));
                 renderPhotos(); // Re-render the photo grid
+                closeFullscreen(); // Exit fullscreen mode
             }
         }
 
