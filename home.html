@@ -218,6 +218,15 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+.floating-btn:hover {
+    background-color: #333;
+}
+.floating-btn:active {
+    transform: translateX(-50%) scale(0.95);
+}
+
+
+
 
     </style>
 </head>
@@ -234,8 +243,6 @@
         </ul>
     </div>
 
-    <button class="add-user-btn" id="addUserBtn" aria-label="Add User">+</button>
-
     <div class="modal" id="addUserModal">
         <div class="modal-content">
             <h3>Add User</h3>
@@ -245,6 +252,7 @@
         </div>
     </div>
 
+    <button class="add-user-btn" id="addUserBtn" aria-label="Add User">+</button>
     <div class="footer">
         <a href="home.html" class="footer-icon" aria-label="Home">
             <i class="fas fa-home"></i>
