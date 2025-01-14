@@ -356,6 +356,7 @@
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.10.0/recorder.min.js"></script>
 </head>
 <body>
 
@@ -915,7 +916,19 @@ document.getElementById("addTaskForm").addEventListener("submit", function (even
         const tasks = JSON.parse(localStorage.getItem("familyApp_tasks")) || [];
 
         // Add new task
-        tasks.push({ title, notes, room, repeat, settings, date, reminder, users, reward, voiceNote: document.getElementById("voiceNoteData").value });
+        tasks.push({
+    title,
+    notes,
+    room,
+    repeat,
+    settings,
+    date,
+    reminder,
+    users,
+    reward,
+    voiceNote: document.getElementById("voiceNoteData").value, // Base64 audio data
+});
+
 
         // Save back to localStorage
         localStorage.setItem("familyApp_tasks", JSON.stringify(tasks));
@@ -1002,6 +1015,44 @@ speakerModeBtn.addEventListener("click", async () => {
 });
 
 
+let recorder;
+let audioBlob;
+
+document.getElementById("recordVoiceNote").addEventListener("click", async () => {
+    const recordButton = document.getElementById("recordVoiceNote");
+
+    if (recordButton.textContent.includes("Stop")) {
+        // Stop recording
+        recorder.stop();
+        recorder.exportWAV((blob) => {
+            audioBlob = blob;
+
+            // Create a URL for playback
+            const audioUrl = URL.createObjectURL(blob);
+            const audioPlayback = document.getElementById("voiceNotePlayback");
+            audioPlayback.src = audioUrl;
+            audioPlayback.style.display = "block";
+
+            // Convert audio to Base64 for storage
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                document.getElementById("voiceNoteData").value = reader.result; // Save Base64
+            };
+        });
+
+        recordButton.textContent = "🎙️ Record Voice Note";
+    } else {
+        // Start recording
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const input = audioContext.createMediaStreamSource(stream);
+        recorder = new Recorder(input);
+        recorder.record();
+
+        recordButton.textContent = "🛑 Stop Recording";
+    }
+});
 
 
 
