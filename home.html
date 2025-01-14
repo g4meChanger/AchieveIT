@@ -6,7 +6,18 @@
     <title>Family App</title>
     <link rel="manifest" href="manifest.json">
     <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
         :root {
+            --primary-color: #007BFF;
+            --secondary-color: #0056b3;
             --light-bg: #f1f1f1;
             --text-color: #333;
             --danger-color: red;
@@ -186,6 +197,28 @@
                 font-size: 28px;
             }
         }
+
+
+        .floating-btn {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
     </style>
 </head>
 <body>
