@@ -289,6 +289,70 @@
     font-weight: bold;  /* Bold text for better visibility */
 }
 
+
+
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal.hide {
+    animation: fadeOut 0.3s ease-out;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+
+
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -309,6 +373,11 @@
             <div class="form-group-full">
                 <label for="taskNotes">Notes (Optional)</label>
                 <textarea id="taskNotes" placeholder="Enter any additional notes"></textarea>
+                <div style="margin-top: 10px;">
+                    <button type="button" id="recordVoiceNote" class="select-btn">🎙️ Record Voice Note</button>
+                    <audio id="voiceNotePlayback" controls style="display: none; margin-top: 10px;"></audio>
+                </div>
+                <input type="hidden" id="voiceNoteData" value="">
             </div>
 
             <div class="form-group">
@@ -416,8 +485,8 @@
                 }
             
                 .fancy-input:focus {
-                    border-color: #6a11cb;
-                    box-shadow: 0 4px 12px rgba(106, 17, 203, 0.4);
+                    border-color: #007BFF;
+                    box-shadow: 0 4px 12px rgba(48, 9, 139, 0.664);
                     outline: none;
                     background: #fff;
                 }
@@ -432,7 +501,7 @@
                     padding: 10px 20px; /* Slightly smaller button */
                     font-size: 14px;
                     font-weight: bold;
-                    background: linear-gradient(45deg, #6a11cb, #2575fc);
+                    background: #007BFF;
                     color: white;
                     border: none;
                     border-radius: 20px;
@@ -525,7 +594,6 @@
                 <li data-value="Outside">Outside</li>
                 <li data-value="Other">Other</li>
             </ul>
-            <button class="close-btn" id="closeRoomModal">Close</button>
         </div>
     </div>
 
@@ -538,7 +606,6 @@
                 <li data-value="Weekly">Weekly</li>
                 <li data-value="Monthly">Monthly</li>
             </ul>
-            <button class="close-btn" id="closeRepeatModal">Close</button>
         </div>
     </div>
 
@@ -551,12 +618,29 @@
                 <li data-value="Team Work">Team Work</li>
                 <li data-value="Individual">Individual</li>
             </ul>
-            <button class="close-btn" id="closeSettingsModal">Close</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+
+
+// Show modal with smooth transition
+function showModal(modal) {
+    modal.classList.remove('hide');
+    modal.classList.add('show');
+    modal.style.display = 'flex'; // Make it visible
+}
+
+// Hide modal with smooth transition
+function hideModal(modal) {
+    modal.classList.remove('show');
+    modal.classList.add('hide');
+    setTimeout(() => {
+        modal.style.display = 'none'; // Fully hide after animation
+    }, 300);
+}
+
         // Load users from localStorage and populate the user modal
         const userModal = document.getElementById("userModal");
         const assignedToDisplay = document.getElementById("assignedToDisplay");
@@ -600,14 +684,23 @@
 
 
         // Show the modal when the "Assigned to" section is clicked
-        assignedToDisplay.addEventListener("click", () => {
-            userModal.style.display = 'flex';
-        });
+        // Open User Modal
+assignedToDisplay.addEventListener("click", () => {
+    showModal(userModal);
+});
 
         // Close the modal
-        document.getElementById("closeUserModal").addEventListener("click", () => {
-            userModal.style.display = 'none';
-        });
+        // Close Modal on Outside Click
+window.addEventListener("click", (e) => {
+    if (e.target === userModal) {
+        hideModal(userModal);
+    }
+});
+
+// Close Modal with Button
+document.getElementById("closeUserModal").addEventListener("click", () => {
+    hideModal(userModal);
+});
 
         // Other modal setup and functionality (for Room, Repeat, Settings, etc.) remains the same.
         // You can use the same logic to handle modals for Room, Repeat, and Settings.
@@ -641,36 +734,52 @@ closeRewardButton.addEventListener("click", () => {
 });
 
 
-        function setupModal(modalId, buttonId, inputId) {
-            const modal = document.getElementById(modalId);
-            const button = document.getElementById(buttonId);
-            const input = document.getElementById(inputId);
-            const closeButton = modal.querySelector('.close-btn');
+function setupModal(modalId, buttonId, inputId) {
+    const modal = document.getElementById(modalId);
+    const button = document.getElementById(buttonId);
+    const input = document.getElementById(inputId);
 
-            button.addEventListener('click', () => {
-                modal.style.display = 'flex';
-            });
+    // Show modal
+    button.addEventListener('click', () => {
+        modal.classList.remove('hide');
+        modal.classList.add('show');
+        modal.style.display = 'flex'; // Ensure it's visible
+    });
 
-            closeButton.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-
-            modal.addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    input.value = e.target.getAttribute('data-value');
-                    button.textContent = e.target.getAttribute('data-value');
-                    modal.style.display = 'none';
-                }
-            });
+    // Close modal when clicking outside of the modal content
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal(modal);
         }
+    });
 
-        setupModal('roomModal', 'selectRoom', 'roomSelection');
-        setupModal('repeatModal', 'selectRepeat', 'repeatSelection');
-        setupModal('settingsModal', 'selectSettings', 'settingsSelection');
+    // Handle selection inside modal
+    modal.addEventListener('click', (e) => {
+        if (e.target.tagName === 'LI') {
+            input.value = e.target.getAttribute('data-value');
+            button.textContent = e.target.getAttribute('data-value');
+            closeModal(modal);
+        }
+    });
+}
 
-      // Date picker logic
-        // Initialize Flatpickr on the hidden date input
-// Initialize Flatpickr on the hidden date input
+// Helper function to close modal
+function closeModal(modal) {
+    modal.classList.remove('show');
+    modal.classList.add('hide');
+    setTimeout(() => {
+        modal.style.display = 'none'; // Fully hide after animation
+    }, 300);
+}
+
+// Initialize modals
+setupModal('roomModal', 'selectRoom', 'roomSelection');
+setupModal('repeatModal', 'selectRepeat', 'repeatSelection');
+setupModal('settingsModal', 'selectSettings', 'settingsSelection');
+
+
+
+  
 // Initialize Flatpickr on the hidden date input
 flatpickr("#taskDate", {
     dateFormat: "Y-m-d", // Internal value format for storing
@@ -813,6 +922,56 @@ document.getElementById("addTaskForm").addEventListener("submit", function (even
 
 
 
+let mediaRecorder;
+let audioChunks = [];
+const recordButton = document.getElementById("recordVoiceNote");
+const audioPlayback = document.getElementById("voiceNotePlayback");
+const voiceNoteData = document.getElementById("voiceNoteData");
+
+recordButton.addEventListener("click", async () => {
+    if (recordButton.textContent.includes("Stop")) {
+        // Stop recording
+        mediaRecorder.stop();
+        recordButton.textContent = "🎙️ Record Voice Note";
+    } else {
+        // Start recording
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Your browser does not support audio recording.");
+            return;
+        }
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                // Update the audio playback source
+                audioPlayback.src = audioUrl;
+                audioPlayback.style.display = "block";
+
+                // Save the audio data as Base64 for storage
+                const reader = new FileReader();
+                reader.readAsDataURL(audioBlob);
+                reader.onloadend = () => {
+                    voiceNoteData.value = reader.result; // Save Base64 audio data
+                };
+            };
+
+            mediaRecorder.start();
+            recordButton.textContent = "🛑 Stop Recording";
+        } catch (error) {
+            console.error("Error accessing microphone:", error);
+            alert("Unable to access your microphone.");
+        }
+    }
+});
 
 
 

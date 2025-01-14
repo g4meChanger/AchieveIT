@@ -1,19 +1,3 @@
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then((registration) => {
-          console.log('Service Worker registered with scope: ', registration.scope);
-        })
-        .catch((error) => {
-          console.log('Service Worker registration failed: ', error);
-        });
-    });
-  }
-  
-
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     const addUserBtn = document.getElementById("addUserBtn");
     const addUserModal = document.getElementById("addUserModal");
@@ -25,9 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const users = JSON.parse(localStorage.getItem("users")) || [];
     renderUsers();
 
-    // Show the modal when "+" button is clicked
+    // Show the modal with a smooth animation when "+" button is clicked
     addUserBtn.addEventListener("click", function () {
-        addUserModal.style.display = "flex";
+        addUserModal.classList.add("show"); // Add 'show' class for animation
     });
 
     // Add user when "Add" button is clicked
@@ -38,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("users", JSON.stringify(users));
             renderUsers();
             usernameInput.value = ""; // Clear input
-            addUserModal.style.display = "none"; // Close modal
+            addUserModal.classList.remove("show"); // Close modal
         } else {
             alert("Please enter a valid user name.");
         }
@@ -47,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Close modal when clicking outside the modal content
     addUserModal.addEventListener("click", function (e) {
         if (e.target === addUserModal) {
-            addUserModal.style.display = "none";
+            addUserModal.classList.remove("show");
         }
     });
 

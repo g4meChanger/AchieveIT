@@ -388,10 +388,39 @@
             rewards[userName] = newReward;
             localStorage.setItem("familyApp_rewards", JSON.stringify(rewards));
 
+            // Add the task to the history
+    saveTaskHistory(userName, task);
+
             // Reload tasks and reward
             loadUserTasks(userName);
             loadUserReward(userName);
         }
+
+        // Save task completion history
+function saveTaskHistory(userName, task) {
+    const now = new Date();
+    const month = now.toLocaleString("default", { month: "long" }); // e.g., "January"
+    const date = now.getDate(); // e.g., 14
+    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); // e.g., "16:00"
+    const dateString = now.toLocaleDateString(); // e.g., "01/14/2025"
+
+    // Get the current history from localStorage
+    const history = JSON.parse(localStorage.getItem("familyApp_history")) || {};
+
+    // Ensure the month and date structure exists
+    if (!history[month]) history[month] = {};
+    if (!history[month][date]) history[month][date] = [];
+
+    // Add the task entry
+    history[month][date].push({
+        title: task.title,
+        user: userName,
+        timestamp: `${dateString} at ${time}`,
+    });
+
+    // Save back to localStorage
+    localStorage.setItem("familyApp_history", JSON.stringify(history));
+}
 
         // Show task details in a modal
         function showTaskDetails(task) {
