@@ -370,15 +370,23 @@
                 <label for="taskTitle">Title</label>
                 <input type="text" id="taskTitle" placeholder="Enter task title" required>
             </div>
-            <div class="form-group-full">
-                <label for="taskNotes">Notes (Optional)</label>
-                <textarea id="taskNotes" placeholder="Enter any additional notes"></textarea>
-                <div style="margin-top: 10px;">
-                    <button type="button" id="recordVoiceNote" class="select-btn">🎙️ Record Voice Note</button>
-                    <audio id="voiceNotePlayback" controls style="display: none; margin-top: 10px;"></audio>
-                </div>
-                <input type="hidden" id="voiceNoteData" value="">
-            </div>
+           <div class="form-group-full">
+    <label for="taskNotes">Notes (Optional)</label>
+    <textarea id="taskNotes" placeholder="Enter any additional notes"></textarea>
+
+    <!-- Voice Recording Section -->
+    <div style="margin-top: 10px;">
+        <button type="button" id="recordVoiceNote" class="select-btn">🎙️ Record Voice Note</button>
+        <audio id="voiceNotePlayback" controls style="display: none; margin-top: 10px;"></audio>
+        <div style="margin-top: 10px;">
+            <button type="button" id="speakerModeBtn" class="select-btn" style="display: none;">🔊 Speaker Mode</button>
+        </div>
+    </div>
+
+    <!-- Hidden field to store Base64 audio data -->
+    <input type="hidden" id="voiceNoteData" value="">
+</div>
+
 
             <div class="form-group">
                 <label>Room</label>
@@ -907,7 +915,7 @@ document.getElementById("addTaskForm").addEventListener("submit", function (even
         const tasks = JSON.parse(localStorage.getItem("familyApp_tasks")) || [];
 
         // Add new task
-        tasks.push({ title, notes, room, repeat, settings, date, reminder, users, reward });
+        tasks.push({ title, notes, room, repeat, settings, date, reminder, users, reward, voiceNote: document.getElementById("voiceNoteData").value });
 
         // Save back to localStorage
         localStorage.setItem("familyApp_tasks", JSON.stringify(tasks));
@@ -927,6 +935,7 @@ let audioChunks = [];
 const recordButton = document.getElementById("recordVoiceNote");
 const audioPlayback = document.getElementById("voiceNotePlayback");
 const voiceNoteData = document.getElementById("voiceNoteData");
+const speakerModeBtn = document.getElementById("speakerModeBtn");
 
 recordButton.addEventListener("click", async () => {
     if (recordButton.textContent.includes("Stop")) {
@@ -956,6 +965,9 @@ recordButton.addEventListener("click", async () => {
                 audioPlayback.src = audioUrl;
                 audioPlayback.style.display = "block";
 
+                 // Show the Speaker Mode button
+    speakerModeBtn.style.display = "inline-block";
+
                 // Save the audio data as Base64 for storage
                 const reader = new FileReader();
                 reader.readAsDataURL(audioBlob);
@@ -963,6 +975,22 @@ recordButton.addEventListener("click", async () => {
                     voiceNoteData.value = reader.result; // Save Base64 audio data
                 };
             };
+
+            // Speaker Mode functionality
+speakerModeBtn.addEventListener("click", async () => {
+    if ("setSinkId" in audioPlayback) {
+        try {
+            // Set the audio output device to 'default', which typically routes to the speaker
+            await audioPlayback.setSinkId("default");
+            alert("Speaker Mode enabled. Playing audio through the speaker.");
+        } catch (error) {
+            console.error("Error setting speaker mode:", error);
+            alert("Speaker Mode is not supported on this device or browser.");
+        }
+    } else {
+        alert("Your browser does not support audio output device selection.");
+    }
+});
 
             mediaRecorder.start();
             recordButton.textContent = "🛑 Stop Recording";
