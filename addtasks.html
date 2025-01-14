@@ -673,12 +673,16 @@ closeRewardButton.addEventListener("click", () => {
 // Initialize Flatpickr on the hidden date input
 // Initialize Flatpickr on the hidden date input
 flatpickr("#taskDate", {
-    dateFormat: "Y-m-d", // Internal value format
+    dateFormat: "Y-m-d", // Internal value format for storing
     defaultDate: "today",
     disableMobile: true, // Prevent native pickers on mobile
     onChange: function(selectedDates, dateStr, instance) {
+        // Format the selected date for display
+        const options = { month: "long", day: "numeric" }; // Custom display format
+        const formattedDate = new Date(selectedDates[0]).toLocaleDateString(undefined, options);
+
         // Update the visible date display
-        document.getElementById("dateDisplay").textContent = dateStr;
+        document.getElementById("dateDisplay").textContent = formattedDate;
     },
     positionElement: document.getElementById("dateDisplay"), // Attach the calendar to dateDisplay
     static: false, // Ensure dynamic positioning
@@ -689,6 +693,7 @@ flatpickr("#taskDate", {
 document.getElementById("dateDisplay").addEventListener("click", () => {
     document.getElementById("taskDate")._flatpickr.open();
 });
+
 
 
 
