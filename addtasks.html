@@ -353,7 +353,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x9</div>
+        <div class="title">Add Task y1</div>
     </div>
 
     <div class="content">
@@ -542,15 +542,18 @@
     cursor: pointer;
 }
 
-li {
-    background-color: transparent; /* Default background */
-    color: black; /* Default text color */
+.modal-content ul li {
+    text-align: center;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth transition */
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    margin: 5px 0;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
 }
-
-li:hover {
-    background-color: #f1f1f1; /* Light hover background */
+.modal-content ul li:hover {
+    background-color: #007BFF;
+    color: white;
 }
 
 
@@ -649,52 +652,73 @@ function hideModal(modal) {
         // Load users from localStorage
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
-        // Populate the modal with users //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Populate the modal with users
- // Initialize a Set to store selected users for efficient state management
-const selectedUsers = new Set();
+ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Populate the user list dynamically
-// Populate the modal with users
-users.forEach(user => {
-    const li = document.createElement("li");
-    li.textContent = user;
-    li.dataset.value = user;
+// Populate user list from localStorage
+const populateUsers = () => {
+    const users = JSON.parse(localStorage.getItem("users")) || []; // Fetch users from localStorage
+    userList.innerHTML = ""; // Clear existing list
 
-    li.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent bubbling issues
+    users.forEach((user) => {
+        const userItem = document.createElement("li");
+        userItem.textContent = user; // Assuming users are stored as strings
+        userItem.style.padding = "10px";
+        userItem.style.margin = "5px 0";
+        userItem.style.backgroundColor = "#f1f1f1";
+        userItem.style.borderRadius = "5px";
+        userItem.style.cursor = "pointer";
+        userItem.style.textAlign = "center";
 
-        // Get current state of assigned users
-        let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
+        // Click event to toggle selection
+        userItem.addEventListener("click", () => {
+            if (userItem.style.backgroundColor === "blue") {
+                userItem.style.backgroundColor = "#f1f1f1";
+                userItem.style.color = "black";
+                deselectUser(user);
+            } else {
+                userItem.style.backgroundColor = "blue";
+                userItem.style.color = "white";
+                selectUser(user);
+            }
+        });
 
-        if (li.classList.contains("selected")) {
-            // Unselect the user
-            li.classList.remove("selected");
-            li.style.backgroundColor = ""; // Reset to default color
-            li.style.color = ""; // Reset text color
-            assignedToUsers = assignedToUsers.filter(u => u !== user);
-        } else {
-            // Select the user
-            li.classList.add("selected");
-            li.style.backgroundColor = "#007BFF"; // Set to blue
-            li.style.color = "white"; // Ensure text is readable
-            assignedToUsers.push(user);
-        }
-
-        // Update the state
-        assignedToSelection.value = assignedToUsers.join(', ');
-        assignedToDisplay.textContent = assignedToUsers.length > 0
-            ? `Assigned to: ${assignedToUsers.join(', ')}`
-            : 'Select users';
+        userList.appendChild(userItem);
     });
+};
 
-    userList.appendChild(li);
+// Maintain selected users
+let selectedUsers = [];
+
+// Function to add user to selection
+const selectUser = (user) => {
+    if (!selectedUsers.includes(user)) {
+        selectedUsers.push(user);
+        updateSelectedUsersDisplay();
+    }
+};
+
+// Function to remove user from selection
+const deselectUser = (user) => {
+    selectedUsers = selectedUsers.filter((u) => u !== user);
+    updateSelectedUsersDisplay();
+};
+
+// Update the displayed selected users
+const updateSelectedUsersDisplay = () => {
+    assignedToSelection.value = selectedUsers.join(", ");
+    assignedToDisplay.textContent =
+        selectedUsers.length > 0
+            ? `Selected: ${selectedUsers.join(", ")}`
+            : "Select users";
+};
+
+// Initialize the modal with the user list on load
+document.addEventListener("DOMContentLoaded", () => {
+    populateUsers();
 });
 
 
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         // Show the modal when the "Assigned to" section is clicked
