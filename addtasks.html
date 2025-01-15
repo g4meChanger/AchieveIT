@@ -340,7 +340,8 @@
 
 .selected {
     background-color: #007BFF !important; /* Blue background */
-    color: white; /* White text */ /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+    color: white; /* White text */ 
+    transition: background-color 0.2s ease-in-out; /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 }
 
 
@@ -353,7 +354,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x3</div>
+        <div class="title">Add Task x4</div>
     </div>
 
     <div class="content">
@@ -638,7 +639,8 @@ function hideModal(modal) {
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
         // Populate the modal with users //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        users.forEach(user => {
+  // Populate the modal with users
+users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
@@ -646,35 +648,34 @@ function hideModal(modal) {
     li.addEventListener("click", (e) => {
         e.stopPropagation(); // Prevent bubbling issues
 
-        // Parse the current selection
+        // Get current state of assigned users
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
         if (li.classList.contains("selected")) {
             // Unselect the user
-            li.classList.remove("selected");
-            assignedToUsers = assignedToUsers.filter(u => u !== user); // Remove the user from the array
+            assignedToUsers = assignedToUsers.filter(u => u !== user);
         } else {
             // Select the user
-            li.classList.add("selected");
-            assignedToUsers.push(user); // Add the user to the array
+            assignedToUsers.push(user);
         }
 
-        // Update the hidden input value and the display
+        // Update state and DOM
         assignedToSelection.value = assignedToUsers.join(', ');
         assignedToDisplay.textContent = assignedToUsers.length > 0
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
 
-        // Update the DOM to ensure consistency
+        // Update visuals explicitly
         updateUserListVisuals(assignedToUsers);
     });
 
     userList.appendChild(li);
 });
 
-// Helper function to update the visual state of the user list
+// Function to synchronize the DOM visuals
 function updateUserListVisuals(assignedToUsers) {
     const allListItems = userList.querySelectorAll("li");
+
     allListItems.forEach(item => {
         if (assignedToUsers.includes(item.dataset.value)) {
             item.classList.add("selected");
@@ -683,6 +684,23 @@ function updateUserListVisuals(assignedToUsers) {
         }
     });
 }
+
+// Show the modal when the "Assigned to" section is clicked
+assignedToDisplay.addEventListener("click", () => {
+    showModal(userModal);
+});
+
+// Close the modal
+window.addEventListener("click", (e) => {
+    if (e.target === userModal) {
+        hideModal(userModal);
+    }
+});
+
+// Close Modal with Button
+document.getElementById("closeUserModal").addEventListener("click", () => {
+    hideModal(userModal);
+});
 
 
 
