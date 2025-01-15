@@ -172,7 +172,6 @@
         const albumName = params.get('album');
         const albums = JSON.parse(localStorage.getItem('albums')) || {};
         const photos = albums[albumName] || [];
-        let longPressTimeout;
         let currentPhotoIndex = null;
 
         document.getElementById('albumTitle').textContent = albumName;
@@ -187,11 +186,6 @@
                     <img 
                         src="${photoSrc}" 
                         class="photo" 
-                        ontouchstart="startLongPress(${index})" 
-                        ontouchend="cancelLongPress()" 
-                        onmousedown="startLongPress(${index})" 
-                        onmouseup="cancelLongPress()" 
-                        onmouseleave="cancelLongPress()" 
                         onclick="showFullscreen(${index})"
                     >
                 `;
@@ -220,16 +214,6 @@
         function closeFullscreen() {
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
             fullscreenOverlay.classList.remove('active');
-        }
-
-        function startLongPress(index) {
-            longPressTimeout = setTimeout(() => {
-                alert("Hold detected, release to open system menu.");
-            }, 800);
-        }
-
-        function cancelLongPress() {
-            clearTimeout(longPressTimeout); // Cancel long-press if the user releases early
         }
 
         function deletePhotoFromFullscreen() {
