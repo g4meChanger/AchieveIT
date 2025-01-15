@@ -273,6 +273,45 @@
     }
 }
 
+
+/* Styles for swipe container and delete button */
+    .task-item {
+        position: relative;
+        background-color: #f9f9f9;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        user-select: none; /* Prevent text selection */
+    }
+
+    .task-item .delete-btn {
+        position: absolute;
+        right: -100px;
+        top: 0;
+        height: 100%;
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0 20px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: right 0.3s ease;
+        user-select: none; /* Prevent text selection */
+    }
+
+    .task-item.swiped {
+        transform: translateX(-100px);
+    }
+
+    .task-item.swiped .delete-btn {
+        right: 0;
+    }
     </style>
 </head>
 <body>
@@ -365,20 +404,91 @@
         }
 
         function showDateHistory(month, date, tasks) {
-            const modal = document.getElementById("historyModal");
-            const detailsList = document.getElementById("historyDetails");
+    const modal = document.getElementById("historyModal");
+    const detailsList = document.getElementById("historyDetails");
 
-            // Clear previous details
-            detailsList.innerHTML = "";
+    // Clear previous details
+    detailsList.innerHTML = "";
 
-            tasks.forEach(task => {
-                const taskItem = document.createElement("li");
-                taskItem.textContent = `${task.title}, ${task.user} - ${task.timestamp}`;
-                detailsList.appendChild(taskItem);
-            });
+    tasks.forEach((task, index) => {
+        const taskItem = document.createElement("li");
+        taskItem.className = "task-item";
+        taskItem.textContent = `${task.title}, ${task.user} - ${task.timestamp}`;
 
-            modal.classList.add("show");
-        }
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", () => {
+            tasks.splice(index, 1);
+            const history = JSON.parse(localStorage.getItem("familyApp_history")) || {};
+            history[month][date] = tasks;
+
+            if (tasks.length === 0) {
+                delete history[month][date];
+                if (Object.keys(history[month]).length === 0) {
+                    delete history[month];
+                }
+            }
+
+            localStorage.setItem("familyApp_history", JSON.stringify(history));
+            renderHistory();
+            if (tasks.length > 0) {
+                showDateHistory(month, date, tasks);
+            } else {
+                modal.classList.remove("show");
+            }
+        });
+
+        taskItem.appendChild(deleteBtn);
+
+        let startX = 0;
+        let currentX = 0;
+        let isSwiping = false;
+
+        // Touch Events
+        taskItem.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+            isSwiping = true;
+        });
+
+        taskItem.addEventListener("touchmove", (e) => {
+            if (!isSwiping) return;
+            currentX = e.touches[0].clientX;
+            const diffX = startX - currentX;
+            if (diffX > 50) taskItem.classList.add("swiped");
+            else if (diffX < -50) taskItem.classList.remove("swiped");
+        });
+
+        taskItem.addEventListener("touchend", () => {
+            isSwiping = false;
+        });
+
+        // Mouse Events for Desktop
+        taskItem.addEventListener("mousedown", (e) => {
+            startX = e.clientX;
+            isSwiping = true;
+        });
+
+        taskItem.addEventListener("mousemove", (e) => {
+            if (!isSwiping) return;
+            currentX = e.clientX;
+            const diffX = startX - currentX;
+            if (diffX > 50) taskItem.classList.add("swiped");
+            else if (diffX < -50) taskItem.classList.remove("swiped");
+        });
+
+        taskItem.addEventListener("mouseup", () => {
+            isSwiping = false;
+        });
+
+        detailsList.appendChild(taskItem);
+    });
+
+    modal.classList.add("show");
+}
+
+
+
 
         document.getElementById("closeModal").addEventListener("click", () => {
     const modal = document.getElementById("historyModal");
