@@ -125,67 +125,75 @@
 
     <script>
         const albums = JSON.parse(localStorage.getItem('albums')) || {};
-        let longPressTimeout;
+let longPressTimeout;
+let isLongPress = false; // Flag to distinguish long press from click
 
-        function createAlbum() {
-            const albumName = prompt('Enter album name:');
-            if (albumName && !albums[albumName]) {
-                albums[albumName] = [];
-                localStorage.setItem('albums', JSON.stringify(albums));
-                renderAlbums();
-            } else if (albums[albumName]) {
-                alert('Album already exists!');
-            } else {
-                alert('Invalid album name.');
-            }
-        }
-
-        function renderAlbums() {
-            const albumGrid = document.getElementById('albumGrid');
-            albumGrid.innerHTML = '';
-            Object.keys(albums).forEach(albumName => {
-                const album = document.createElement('div');
-                album.className = 'album';
-                album.textContent = albumName;
-
-                // Handle click to open album
-                album.onclick = () => openAlbumPage(albumName);
-
-                // Handle long press for deletion
-                album.ontouchstart = (event) => startLongPress(albumName, event);
-                album.onmousedown = (event) => startLongPress(albumName, event);
-                album.ontouchend = cancelLongPress;
-                album.onmouseup = cancelLongPress;
-                album.onmouseleave = cancelLongPress;
-
-                albumGrid.appendChild(album);
-            });
-        }
-
-        function openAlbumPage(albumName) {
-            window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
-        }
-
-        function startLongPress(albumName, event) {
-            event.preventDefault(); // Prevent default browser behavior
-            longPressTimeout = setTimeout(() => {
-                if (confirm(`Do you want to delete the album "${albumName}"?`)) {
-                    deleteAlbum(albumName);
-                }
-            }, 800); // Trigger after 800ms
-        }
-
-        function cancelLongPress() {
-            clearTimeout(longPressTimeout); // Cancel long press if the user releases early
-        }
-
-        function deleteAlbum(albumName) {
-            delete albums[albumName]; // Remove the album from the object
-            localStorage.setItem('albums', JSON.stringify(albums)); // Update localStorage
-            renderAlbums(); // Re-render albums
-        }
-
+function createAlbum() {
+    const albumName = prompt('Enter album name:');
+    if (albumName && !albums[albumName]) {
+        albums[albumName] = [];
+        localStorage.setItem('albums', JSON.stringify(albums));
         renderAlbums();
+    } else if (albums[albumName]) {
+        alert('Album already exists!');
+    } else {
+        alert('Invalid album name.');
+    }
+}
+
+function renderAlbums() {
+    const albumGrid = document.getElementById('albumGrid');
+    albumGrid.innerHTML = '';
+    Object.keys(albums).forEach(albumName => {
+        const album = document.createElement('div');
+        album.className = 'album';
+        album.textContent = albumName;
+
+        // Handle click to open album
+        album.onclick = () => {
+            if (!isLongPress) {
+                openAlbumPage(albumName); // Open the album only if it wasn't a long press
+            }
+        };
+
+        // Handle long press for deletion
+        album.ontouchstart = (event) => startLongPress(albumName, event);
+        album.onmousedown = (event) => startLongPress(albumName, event);
+        album.ontouchend = cancelLongPress;
+        album.onmouseup = cancelLongPress;
+        album.onmouseleave = cancelLongPress;
+
+        albumGrid.appendChild(album);
+    });
+}
+
+function openAlbumPage(albumName) {
+    window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
+}
+
+function startLongPress(albumName, event) {
+    event.preventDefault(); // Prevent default browser behavior
+    isLongPress = false; // Reset flag
+    longPressTimeout = setTimeout(() => {
+        isLongPress = true; // Set flag to true if it's a long press
+        if (confirm(`Do you want to delete the album "${albumName}"?`)) {
+            deleteAlbum(albumName);
+        }
+    }, 800); // Trigger after 800ms
+}
+
+function cancelLongPress() {
+    clearTimeout(longPressTimeout); // Cancel long press if the user releases early
+}
+
+function deleteAlbum(albumName) {
+    delete albums[albumName]; // Remove the album from the object
+    localStorage.setItem('albums', JSON.stringify(albums)); // Update localStorage
+    renderAlbums(); // Re-render albums
+}
+
+renderAlbums();
+
     </script>
 </body>
 </html>
