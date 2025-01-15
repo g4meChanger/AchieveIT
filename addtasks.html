@@ -354,7 +354,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x4</div>
+        <div class="title">Add Task x5</div>
     </div>
 
     <div class="content">
@@ -640,7 +640,7 @@ function hideModal(modal) {
 
         // Populate the modal with users //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Populate the modal with users
-users.forEach(user => {
+  users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
@@ -659,18 +659,26 @@ users.forEach(user => {
             assignedToUsers.push(user);
         }
 
-        // Update state and DOM
+        // Update the state
         assignedToSelection.value = assignedToUsers.join(', ');
         assignedToDisplay.textContent = assignedToUsers.length > 0
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
 
-        // Update visuals explicitly
+        // Forcefully update visuals
         updateUserListVisuals(assignedToUsers);
+        enforceVisualUpdate(li);
     });
 
     userList.appendChild(li);
 });
+
+// Helper function to enforce DOM updates
+function enforceVisualUpdate(element) {
+    element.style.transition = 'none'; // Reset transitions
+    element.offsetHeight; // Trigger a reflow to flush styles
+    element.style.transition = ''; // Restore transitions
+}
 
 // Function to synchronize the DOM visuals
 function updateUserListVisuals(assignedToUsers) {
@@ -685,22 +693,6 @@ function updateUserListVisuals(assignedToUsers) {
     });
 }
 
-// Show the modal when the "Assigned to" section is clicked
-assignedToDisplay.addEventListener("click", () => {
-    showModal(userModal);
-});
-
-// Close the modal
-window.addEventListener("click", (e) => {
-    if (e.target === userModal) {
-        hideModal(userModal);
-    }
-});
-
-// Close Modal with Button
-document.getElementById("closeUserModal").addEventListener("click", () => {
-    hideModal(userModal);
-});
 
 
 
