@@ -123,7 +123,7 @@
     </div>
 
     <script>
-        const albums = JSON.parse(localStorage.getItem('albums')) || {};
+         const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
 function createAlbum() {
     const albumName = prompt('Enter album name:');
@@ -147,12 +147,14 @@ function renderAlbums() {
         album.textContent = albumName;
 
         let pressTimer;
+        let longPressDetected = false;
 
         // Touchstart: Start the timer and add the "expanded" class
-        album.addEventListener('touchstart', function (e) {
+        album.addEventListener('touchstart', function () {
+            longPressDetected = false; // Reset on new touch
             album.classList.add('expanded');
             pressTimer = setTimeout(() => {
-                // Long press detected
+                longPressDetected = true; // Mark as long press
                 album.classList.remove('expanded');
                 if (confirm(`Do you want to delete the album "${albumName}"?`)) {
                     deleteAlbum(albumName);
@@ -161,14 +163,19 @@ function renderAlbums() {
         });
 
         // Touchend: Clear timer and remove the "expanded" class
-        album.addEventListener('touchend', function (e) {
+        album.addEventListener('touchend', function () {
             clearTimeout(pressTimer);
             album.classList.remove('expanded');
+            if (!longPressDetected) {
+                openAlbumPage(albumName); // Open if it wasn't a long press
+            }
         });
 
-        // Single-click: Open the album
+        // Prevent click event during long press
         album.addEventListener('click', function (e) {
-            if (!pressTimer) openAlbumPage(albumName);
+            if (longPressDetected) {
+                e.preventDefault();
+            }
         });
 
         albumGrid.appendChild(album);
