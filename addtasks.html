@@ -638,14 +638,13 @@ function hideModal(modal) {
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
         // Populate the modal with users
-       // Populate the modal with users
-users.forEach(user => {
+        users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
 
     // Add event listener to toggle the selected state
-    li.addEventListener("click", () => {
+    li.addEventListener("pointerdown", () => {
         // Get the current selection value
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
@@ -668,6 +667,7 @@ users.forEach(user => {
 
     userList.appendChild(li);
 });
+
 
 
 
