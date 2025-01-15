@@ -58,6 +58,8 @@
             font-weight: bold;
             cursor: pointer;
             position: relative;
+            user-select: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .add-album-btn {
@@ -95,6 +97,18 @@
             text-align: center;
             font-size: 20px;
         }
+
+
+
+
+   
+
+    /* Motion effect when "picked up" */
+    .album.moving {
+        transform: scale(1.1) translateY(-10px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000; /* Ensure it appears above other elements */
+    }
     </style>
 </head>
 <body>
@@ -138,37 +152,49 @@ function renderAlbums() {
         album.className = 'album';
         album.textContent = albumName;
 
-        // Open album on normal click
-        album.onclick = () => openAlbumPage(albumName);
-
-        // Handle long-press to delete
         let pressTimer;
+        let isMoving = false;
 
-        album.addEventListener('mousedown', (e) => {
+        const startPress = (e) => {
             pressTimer = setTimeout(() => {
+                album.classList.add('moving');
+                isMoving = true;
+            }, 300); // Start moving effect after 300ms
+        };
+
+        const cancelPress = () => {
+            clearTimeout(pressTimer);
+            if (isMoving) {
+                album.classList.remove('moving');
+                isMoving = false;
+            }
+        };
+
+        const confirmDeletion = () => {
+            if (isMoving) {
                 if (confirm(`Are you sure you want to delete the album "${albumName}"?`)) {
                     delete albums[albumName];
                     localStorage.setItem('albums', JSON.stringify(albums));
                     renderAlbums();
                 }
-            }, 1000); // 1-second press to trigger delete
-        });
+            }
+            cancelPress();
+        };
 
-        album.addEventListener('mouseup', () => clearTimeout(pressTimer));
-        album.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+        // Prevent text selection and handle press events
+        album.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startPress(e);
+        });
+        album.addEventListener('mouseup', confirmDeletion);
+        album.addEventListener('mouseleave', cancelPress);
 
         // For touch devices
         album.addEventListener('touchstart', (e) => {
-            pressTimer = setTimeout(() => {
-                if (confirm(`Are you sure you want to delete the album "${albumName}"?`)) {
-                    delete albums[albumName];
-                    localStorage.setItem('albums', JSON.stringify(albums));
-                    renderAlbums();
-                }
-            }, 1000);
+            e.preventDefault();
+            startPress(e);
         });
-
-        album.addEventListener('touchend', () => clearTimeout(pressTimer));
+        album.addEventListener('touchend', confirmDeletion);
 
         albumGrid.appendChild(album);
     });
