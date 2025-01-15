@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scary Prank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f1f1f1;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .cool-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .cool-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .scary-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .scary-overlay.active {
+            display: flex;
+        }
+
+        .scary-image {
+            width: 100%;
+            max-width: 400px; /* Initial size */
+            animation: zoomIn 2s ease-out forwards;
+        }
+
+        @keyframes zoomIn {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(5); /* Adjust the zoom level */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="cool-button" onclick="triggerPrank()">This is Cool - Push ME</button>
+    </div>
+
+    <div class="scary-overlay" id="scaryOverlay">
+        <img src="screaming.png" alt="Scary Face" class="scary-image">
+    </div>
+
+    <script>
+        function triggerPrank() {
+            const overlay = document.getElementById('scaryOverlay');
+            overlay.classList.add('active');
+
+            // Play screaming sound
+            const audio = new Audio('scream.mp3'); // Update the path to your scream audio file
+            audio.play();
+
+            // Remove the prank overlay after a few seconds (optional)
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

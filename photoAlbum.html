@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Challenge</title>
     <style>
-          body {
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -17,6 +17,7 @@
         .header {
             display: flex;
             align-items: center;
+            justify-content: center; /* Center the title horizontally */
             background-color: #f1f1f1;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,21 +28,13 @@
             font-weight: bold;
         }
 
-        .content {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-auto-rows: 150px;
-            gap: 20px;
-            padding: 20px;
-            justify-items: center;
-        }
-        
         .album-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin-top: 20px;
+            padding: 20px; /* Add padding to center the grid */
+            justify-content: center; /* Ensure albums are centered */
         }
 
         .album {
@@ -55,14 +48,32 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            position: relative;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .album:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .add-album-btn {
-            margin-top: 20px;
+            margin: 20px auto;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            display: block;
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .add-album-btn:hover {
+            background-color: #0056b3;
         }
 
         .footer {
@@ -114,6 +125,7 @@
 
     <script>
         const albums = JSON.parse(localStorage.getItem('albums')) || {};
+        let longPressTimeout;
 
         function createAlbum() {
             const albumName = prompt('Enter album name:');
@@ -135,13 +147,42 @@
                 const album = document.createElement('div');
                 album.className = 'album';
                 album.textContent = albumName;
+
+                // Handle click to open album
                 album.onclick = () => openAlbumPage(albumName);
+
+                // Handle long press for deletion
+                album.ontouchstart = (event) => startLongPress(albumName, event);
+                album.onmousedown = (event) => startLongPress(albumName, event);
+                album.ontouchend = cancelLongPress;
+                album.onmouseup = cancelLongPress;
+                album.onmouseleave = cancelLongPress;
+
                 albumGrid.appendChild(album);
             });
         }
 
         function openAlbumPage(albumName) {
             window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
+        }
+
+        function startLongPress(albumName, event) {
+            event.preventDefault(); // Prevent default browser behavior
+            longPressTimeout = setTimeout(() => {
+                if (confirm(`Do you want to delete the album "${albumName}"?`)) {
+                    deleteAlbum(albumName);
+                }
+            }, 800); // Trigger after 800ms
+        }
+
+        function cancelLongPress() {
+            clearTimeout(longPressTimeout); // Cancel long press if the user releases early
+        }
+
+        function deleteAlbum(albumName) {
+            delete albums[albumName]; // Remove the album from the object
+            localStorage.setItem('albums', JSON.stringify(albums)); // Update localStorage
+            renderAlbums(); // Re-render albums
         }
 
         renderAlbums();
