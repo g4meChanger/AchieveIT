@@ -129,7 +129,8 @@
     </div>
 
     <script>
-       const albums = JSON.parse(localStorage.getItem('albums')) || {};
+       
+    const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
 function createAlbum() {
     const albumName = prompt('Enter album name:');
@@ -153,25 +154,25 @@ function renderAlbums() {
         album.textContent = albumName;
 
         let pressTimer;
-        let isMoving = false;
+        let wasLongPress = false;
 
-        const startPress = (e) => {
+        const startPress = () => {
             pressTimer = setTimeout(() => {
+                wasLongPress = true;
                 album.classList.add('moving');
-                isMoving = true;
             }, 300); // Start moving effect after 300ms
         };
 
         const cancelPress = () => {
             clearTimeout(pressTimer);
-            if (isMoving) {
+            if (wasLongPress) {
                 album.classList.remove('moving');
-                isMoving = false;
+                wasLongPress = false;
             }
         };
 
         const confirmDeletion = () => {
-            if (isMoving) {
+            if (wasLongPress) {
                 if (confirm(`Are you sure you want to delete the album "${albumName}"?`)) {
                     delete albums[albumName];
                     localStorage.setItem('albums', JSON.stringify(albums));
@@ -181,20 +182,35 @@ function renderAlbums() {
             cancelPress();
         };
 
-        // Prevent text selection and handle press events
+        // Handle single click to open album
+        album.addEventListener('click', (e) => {
+            if (!wasLongPress) {
+                openAlbumPage(albumName);
+            }
+        });
+
+        // Long-press logic
         album.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            startPress(e);
+            wasLongPress = false;
+            startPress();
         });
-        album.addEventListener('mouseup', confirmDeletion);
+        album.addEventListener('mouseup', (e) => {
+            if (wasLongPress) confirmDeletion();
+            cancelPress();
+        });
         album.addEventListener('mouseleave', cancelPress);
 
         // For touch devices
         album.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            startPress(e);
+            wasLongPress = false;
+            startPress();
         });
-        album.addEventListener('touchend', confirmDeletion);
+        album.addEventListener('touchend', (e) => {
+            if (wasLongPress) confirmDeletion();
+            cancelPress();
+        });
 
         albumGrid.appendChild(album);
     });
