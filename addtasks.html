@@ -340,7 +340,7 @@
 
 .selected {
     background-color: #007BFF !important; /* Blue background */
-    color: white; /* White text */
+    color: white; /* White text */ /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 }
 
 
@@ -353,7 +353,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task</div>
+        <div class="title">Add Task x1</div>
     </div>
 
     <div class="content">
@@ -637,7 +637,7 @@ function hideModal(modal) {
         // Load users from localStorage
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
-        // Populate the modal with users
+        // Populate the modal with users //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
@@ -650,7 +650,10 @@ function hideModal(modal) {
 
         if (li.classList.contains("selected")) {
             // Deselect the user
-            li.classList.remove("selected"); // Immediately remove the visual state
+            li.classList.remove("selected");
+            // Force reflow to immediately update the DOM
+            void li.offsetWidth;
+            li.classList.remove("selected"); // Reapply to ensure proper rendering
             assignedToUsers = assignedToUsers.filter(u => u !== user); // Remove from selection list
         } else {
             // Select the user
@@ -670,6 +673,7 @@ function hideModal(modal) {
 
     userList.appendChild(li);
 });
+
 
 
 
