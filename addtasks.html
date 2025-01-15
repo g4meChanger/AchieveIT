@@ -338,6 +338,26 @@
 }
 
 
+.modal-content ul li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    color: black; /* Default text color */
+}
+
+.modal-content ul li:hover {
+    background-color: #007BFF; /* Hover color */
+}
+
+.modal-content ul li.selected {
+    background-color: #007BFF; /* Selected background color */
+    color: white; /* Selected text color */
+}
+
+
 
 
 
@@ -542,21 +562,6 @@
     cursor: pointer;
 }
 
-.modal-content ul li {
-    text-align: center;
-    cursor: pointer;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    margin: 5px 0;
-    padding: 10px;
-    transition: background-color 0.3s, color 0.3s;
-}
-.modal-content ul li:hover {
-    background-color: #007BFF;
-    color: white;
-}
-
-
             </style>
             
             <button type="submit" class="save-btn">Save</button>
@@ -662,23 +667,16 @@ const populateUsers = () => {
     users.forEach((user) => {
         const userItem = document.createElement("li");
         userItem.textContent = user; // Assuming users are stored as strings
-        userItem.style.padding = "10px";
-        userItem.style.margin = "5px 0";
-        userItem.style.backgroundColor = "#f1f1f1";
-        userItem.style.borderRadius = "5px";
-        userItem.style.cursor = "pointer";
-        userItem.style.textAlign = "center";
+        userItem.classList.add("user-item");
 
         // Click event to toggle selection
         userItem.addEventListener("click", () => {
-            if (userItem.style.backgroundColor === "blue") {
-                userItem.style.backgroundColor = "#f1f1f1";
-                userItem.style.color = "black";
-                deselectUser(user);
+            if (userItem.classList.contains("selected")) {
+                userItem.classList.remove("selected");
+                deselectUser(user); // Update the array
             } else {
-                userItem.style.backgroundColor = "blue";
-                userItem.style.color = "white";
-                selectUser(user);
+                userItem.classList.add("selected");
+                selectUser(user); // Update the array
             }
         });
 
@@ -686,7 +684,6 @@ const populateUsers = () => {
     });
 };
 
-// Maintain selected users
 let selectedUsers = [];
 
 // Function to add user to selection
@@ -716,6 +713,7 @@ const updateSelectedUsersDisplay = () => {
 document.addEventListener("DOMContentLoaded", () => {
     populateUsers();
 });
+
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
