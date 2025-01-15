@@ -124,7 +124,7 @@
     </div>
 
     <script>
-        const albums = JSON.parse(localStorage.getItem('albums')) || {};
+       const albums = JSON.parse(localStorage.getItem('albums')) || {};
 let longPressTimeout;
 let isLongPress = false; // Flag to distinguish long press from click
 
@@ -151,8 +151,9 @@ function renderAlbums() {
 
         // Handle click to open album
         album.onclick = () => {
+            // Open the album only if it wasn't a long press
             if (!isLongPress) {
-                openAlbumPage(albumName); // Open the album only if it wasn't a long press
+                openAlbumPage(albumName);
             }
         };
 
@@ -184,6 +185,7 @@ function startLongPress(albumName, event) {
 
 function cancelLongPress() {
     clearTimeout(longPressTimeout); // Cancel long press if the user releases early
+    isLongPress = false; // Ensure the flag is reset after any release
 }
 
 function deleteAlbum(albumName) {
@@ -192,8 +194,8 @@ function deleteAlbum(albumName) {
     renderAlbums(); // Re-render albums
 }
 
+// Initial render
 renderAlbums();
-
     </script>
 </body>
 </html>
