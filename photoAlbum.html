@@ -147,52 +147,6 @@
         }
 
         renderAlbums();
-
-        let longPressTimer;
-
-function renderAlbums() {
-    const albumGrid = document.getElementById('albumGrid');
-    albumGrid.innerHTML = '';
-    Object.keys(albums).forEach(albumName => {
-        const album = document.createElement('div');
-        album.className = 'album';
-        album.textContent = albumName;
-
-        // Add event listeners for single press and long press
-        album.addEventListener('touchstart', (e) => handleTouchStart(e, albumName));
-        album.addEventListener('touchend', handleTouchEnd);
-        album.addEventListener('touchmove', handleTouchMove); // Cancel long press on move
-
-        album.onclick = () => openAlbumPage(albumName);
-
-        albumGrid.appendChild(album);
-    });
-}
-
-function handleTouchStart(event, albumName) {
-    longPressTimer = setTimeout(() => {
-        longPressTimer = null; // Clear timer after it executes
-        if (confirm(`Delete album "${albumName}"?`)) {
-            delete albums[albumName];
-            localStorage.setItem('albums', JSON.stringify(albums));
-            renderAlbums();
-        }
-    }, 800); // Long press duration (800ms)
-}
-
-function handleTouchEnd() {
-    if (longPressTimer) {
-        clearTimeout(longPressTimer);
-        longPressTimer = null; // Ensure timer is cleared
-    }
-}
-
-function handleTouchMove() {
-    if (longPressTimer) {
-        clearTimeout(longPressTimer);
-        longPressTimer = null; // Cancel long press on touch move
-    }
-}
     </script>
 </body>
 </html>
