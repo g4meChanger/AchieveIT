@@ -47,20 +47,18 @@
         }
 
         .album {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 150px;
-        height: 150px;
-        border: 2px solid black;
-        text-align: center;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        position: relative;
-        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth animation */
-        user-select: none;
-    }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+            border: 2px solid black;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+        }
 
         .add-album-btn {
             margin-top: 20px;
@@ -97,12 +95,6 @@
             text-align: center;
             font-size: 20px;
         }
-
-
-        .album.expanded {
-        transform: scale(1.1); /* Slightly larger */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for emphasis */
-    }
     </style>
 </head>
 <body>
@@ -123,76 +115,38 @@
     </div>
 
     <script>
-         const albums = JSON.parse(localStorage.getItem('albums')) || {};
+        const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
-function createAlbum() {
-    const albumName = prompt('Enter album name:');
-    if (albumName && !albums[albumName]) {
-        albums[albumName] = [];
-        localStorage.setItem('albums', JSON.stringify(albums));
+        function createAlbum() {
+            const albumName = prompt('Enter album name:');
+            if (albumName && !albums[albumName]) {
+                albums[albumName] = [];
+                localStorage.setItem('albums', JSON.stringify(albums));
+                renderAlbums();
+            } else if (albums[albumName]) {
+                alert('Album already exists!');
+            } else {
+                alert('Invalid album name.');
+            }
+        }
+
+        function renderAlbums() {
+            const albumGrid = document.getElementById('albumGrid');
+            albumGrid.innerHTML = '';
+            Object.keys(albums).forEach(albumName => {
+                const album = document.createElement('div');
+                album.className = 'album';
+                album.textContent = albumName;
+                album.onclick = () => openAlbumPage(albumName);
+                albumGrid.appendChild(album);
+            });
+        }
+
+        function openAlbumPage(albumName) {
+            window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
+        }
+
         renderAlbums();
-    } else if (albums[albumName]) {
-        alert('Album already exists!');
-    } else {
-        alert('Invalid album name.');
-    }
-}
-
-function renderAlbums() {
-    const albumGrid = document.getElementById('albumGrid');
-    albumGrid.innerHTML = '';
-    Object.keys(albums).forEach(albumName => {
-        const album = document.createElement('div');
-        album.className = 'album';
-        album.textContent = albumName;
-
-        let pressTimer;
-        let longPressDetected = false;
-
-        // Touchstart: Start the timer and add the "expanded" class
-        album.addEventListener('touchstart', function () {
-            longPressDetected = false; // Reset on new touch
-            album.classList.add('expanded');
-            pressTimer = setTimeout(() => {
-                longPressDetected = true; // Mark as long press
-                album.classList.remove('expanded');
-                if (confirm(`Do you want to delete the album "${albumName}"?`)) {
-                    deleteAlbum(albumName);
-                }
-            }, 800); // 800ms for long press detection
-        });
-
-        // Touchend: Clear timer and remove the "expanded" class
-        album.addEventListener('touchend', function () {
-            clearTimeout(pressTimer);
-            album.classList.remove('expanded');
-            if (!longPressDetected) {
-                openAlbumPage(albumName); // Open if it wasn't a long press
-            }
-        });
-
-        // Prevent click event during long press
-        album.addEventListener('click', function (e) {
-            if (longPressDetected) {
-                e.preventDefault();
-            }
-        });
-
-        albumGrid.appendChild(album);
-    });
-}
-
-function deleteAlbum(albumName) {
-    delete albums[albumName];
-    localStorage.setItem('albums', JSON.stringify(albums));
-    renderAlbums();
-}
-
-function openAlbumPage(albumName) {
-    window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
-}
-
-renderAlbums();
     </script>
 </body>
 </html>
