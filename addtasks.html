@@ -650,12 +650,12 @@ function hideModal(modal) {
 
         if (li.classList.contains("selected")) {
             // Deselect the user
-            li.classList.remove("selected");
-            assignedToUsers = assignedToUsers.filter(u => u !== user);
+            li.classList.remove("selected"); // Immediately remove the visual state
+            assignedToUsers = assignedToUsers.filter(u => u !== user); // Remove from selection list
         } else {
             // Select the user
             li.classList.add("selected");
-            assignedToUsers.push(user);
+            assignedToUsers.push(user); // Add to selection list
         }
 
         // Update the hidden input and display text
@@ -663,17 +663,14 @@ function hideModal(modal) {
         assignedToDisplay.textContent = assignedToUsers.length > 0 
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
-    });
 
-    // Prevent touch-related issues by explicitly handling touchstart
-    li.addEventListener("touchstart", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        li.click();
+        // Prevent lingering focus issues on mobile
+        li.blur();
     });
 
     userList.appendChild(li);
 });
+
 
 
         // Show the modal when the "Assigned to" section is clicked
