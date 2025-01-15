@@ -353,7 +353,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x1</div>
+        <div class="title">Add Task x2</div>
     </div>
 
     <div class="content">
@@ -643,38 +643,38 @@ function hideModal(modal) {
     li.textContent = user;
     li.dataset.value = user;
 
-    // Add event listener to toggle the selected state
-    li.addEventListener("click", () => {
-        // Get the current selection value
+    li.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent bubbling issues
+
+        // Parse the current selection
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
         if (li.classList.contains("selected")) {
-            // Deselect the user
+            // Unselect the user
             li.classList.remove("selected");
-            // Force reflow to immediately update the DOM
-            void li.offsetWidth;
-            li.classList.remove("selected"); // Reapply to ensure proper rendering
-            assignedToUsers = assignedToUsers.filter(u => u !== user); // Remove from selection list
+            assignedToUsers = assignedToUsers.filter(u => u !== user); // Remove the user from the array
         } else {
             // Select the user
             li.classList.add("selected");
-            assignedToUsers.push(user); // Add to selection list
+            assignedToUsers.push(user); // Add the user to the array
         }
 
-        // Update the hidden input and display text
+        // Update the hidden input value and the display
         assignedToSelection.value = assignedToUsers.join(', ');
-        assignedToDisplay.textContent = assignedToUsers.length > 0 
+        assignedToDisplay.textContent = assignedToUsers.length > 0
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
 
-        // Prevent lingering focus issues on mobile
-        li.blur();
+        // Force the browser to immediately update the DOM
+        li.style.transform = 'scale(1)'; // Temporary change to force a reflow
+        void li.offsetHeight; // Trigger a reflow
+        li.style.transform = ''; // Revert the change
     });
-
     userList.appendChild(li);
 });
 
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         // Show the modal when the "Assigned to" section is clicked
