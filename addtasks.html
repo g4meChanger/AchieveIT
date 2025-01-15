@@ -654,14 +654,31 @@ const populateUsers = () => {
         userItem.style.cursor = "pointer";
         userItem.style.textAlign = "center";
 
+        // Add hover effect
+        userItem.addEventListener("mouseover", () => {
+            userItem.style.backgroundColor = "#e4e4e4"; // Change background to black
+            userItem.style.color = "black"; // Ensure text remains white
+        });
+
+        userItem.addEventListener("mouseout", () => {
+            // Restore original color based on selection state
+            if (selectedUsers.includes(user)) {
+                userItem.style.backgroundColor = "#007BFF"; // Keep selected color
+                userItem.style.color = "white";
+            } else {
+                userItem.style.backgroundColor = "#f1f1f1"; // Default background
+                userItem.style.color = "black";
+            }
+        });
+
         // Click event to toggle selection
         userItem.addEventListener("click", () => {
-            if (userItem.style.backgroundColor === "blue") {
+            if (selectedUsers.includes(user)) {
                 userItem.style.backgroundColor = "#f1f1f1";
                 userItem.style.color = "black";
                 deselectUser(user);
             } else {
-                userItem.style.backgroundColor = "blue";
+                userItem.style.backgroundColor = "#007BFF";
                 userItem.style.color = "white";
                 selectUser(user);
             }
@@ -670,6 +687,7 @@ const populateUsers = () => {
         userList.appendChild(userItem);
     });
 };
+
 
 
 // Maintain selected users
