@@ -354,7 +354,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x6</div>
+        <div class="title">Add Task x7</div>
     </div>
 
     <div class="content">
@@ -640,39 +640,49 @@ function hideModal(modal) {
 
         // Populate the modal with users //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Populate the modal with users
-  users.forEach(user => {
+ // Initialize a Set to store selected users for efficient state management
+const selectedUsers = new Set();
+
+// Populate the user list dynamically
+users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
-
-    li.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent bubbling issues
-
-        // Get current state of assigned users
-        let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
-
-        if (li.classList.contains("selected")) {
-            // Unselect the user
-            li.classList.remove("selected");
-            assignedToUsers = assignedToUsers.filter(u => u !== user);
-        } else {
-            // Select the user
-            li.classList.add("selected");
-            assignedToUsers.push(user);
-        }
-
-        // Update the hidden input value
-        assignedToSelection.value = assignedToUsers.join(', ');
-
-        // Update the display text
-        assignedToDisplay.textContent = assignedToUsers.length > 0
-            ? `Assigned to: ${assignedToUsers.join(', ')}`
-            : 'Select users';
-    });
-
-    // Append the list item to the user list
     userList.appendChild(li);
 });
+
+// Event delegation: attach one event listener to the parent container
+userList.addEventListener("click", (e) => {
+    const li = e.target;
+
+    // Ensure the clicked element is a list item
+    if (li.tagName === "LI") {
+        const user = li.dataset.value;
+
+        if (selectedUsers.has(user)) {
+            // If the user is already selected, deselect it
+            selectedUsers.delete(user);
+            li.classList.remove("selected");
+        } else {
+            // Otherwise, select the user
+            selectedUsers.add(user);
+            li.classList.add("selected");
+        }
+
+        // Update the hidden input and display
+        updateSelectionDisplay();
+    }
+});
+
+// Function to update the hidden input and display
+function updateSelectionDisplay() {
+    const selectedArray = Array.from(selectedUsers); // Convert Set to Array
+    assignedToSelection.value = selectedArray.join(', ');
+    assignedToDisplay.textContent = selectedArray.length > 0
+        ? `Assigned to: ${selectedArray.join(', ')}`
+        : 'Select users';
+}
+
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
