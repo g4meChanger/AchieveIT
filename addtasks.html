@@ -276,19 +276,30 @@
             font-size: 16px;
         }
 
-.selected {
-    background-color: #007BFF !important; /* Force the background to be blue */
-    color: white;
-    font-weight: bold;
+/* Default Style for Unselected Users */
+#userList li {
+    background-color: transparent; /* Default background */
+    color: black; /* Default text color */
+    font-size: 16px; /* Adjust as needed */
+    padding: 10px; /* Add padding for better touch interaction */
+    border-radius: 5px; /* Optional, for a rounded appearance */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    cursor: pointer;
 }
 
-
-ul li.selected {
-    background-color: #007BFF !important;
-    color: white;
-    font-weight: bold;
-    display: block; /* Ensures background covers the entire element */
+/* Style for Hover State */
+#userList li:hover {
+    background-color: #f1f1f1; /* Light grey background */
+    color: black; /* Ensure hover text remains visible */
 }
+
+/* Selected State */
+#userList li.selected {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text for contrast */
+    font-weight: bold; /* Optional, to emphasize selection */
+}
+
 
 
 
@@ -650,35 +661,39 @@ function hideModal(modal) {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
-    
-    // Add event listener to toggle the selected state
-    li.addEventListener("click", () => {
+
+    const toggleSelection = () => {
         // Get the current selection value
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
         if (li.classList.contains("selected")) {
             // Deselect the user
             li.classList.remove("selected");
-            li.style.backgroundColor = ""; // Reset background color
-            li.style.color = ""; // Reset text color
+            li.style.backgroundColor = ""; // Reset inline background color
+            li.style.color = ""; // Reset inline text color
             assignedToUsers = assignedToUsers.filter(u => u !== user);
         } else {
             // Select the user
             li.classList.add("selected");
-            li.style.backgroundColor = "#007BFF"; // Blue background
-            li.style.color = "white"; // White text
+            li.style.backgroundColor = "#007BFF"; // Set blue background
+            li.style.color = "white"; // Set white text
             assignedToUsers.push(user);
         }
 
         // Update the hidden input and display text
         assignedToSelection.value = assignedToUsers.join(', ');
-        assignedToDisplay.textContent = assignedToUsers.length > 0 
+        assignedToDisplay.textContent = assignedToUsers.length > 0
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
-    });
+    };
+
+    // Add both click and touchend listeners for cross-device compatibility
+    li.addEventListener("click", toggleSelection);
+    li.addEventListener("touchend", toggleSelection);
 
     userList.appendChild(li);
 });
+
 
 
 
