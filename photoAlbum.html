@@ -60,6 +60,9 @@
         position: relative;
         transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth animation */
         user-select: none;
+        -webkit-user-drag: none; /* Prevent dragging */
+    touch-action: manipulation; /* Disable text highlighting on touch devices */
+    pointer-events: all; /* Ensure pointer events are handled correctly */
     }
 
         .add-album-btn {
@@ -123,6 +126,13 @@
     </div>
 
     <script>
+
+        // Prevent context menu globally
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+}, false);
+
+
          const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
 function createAlbum() {
