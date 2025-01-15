@@ -47,18 +47,20 @@
         }
 
         .album {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 150px;
-            height: 150px;
-            border: 2px solid black;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            position: relative;
-        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 150px;
+        height: 150px;
+        border: 2px solid black;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth animation */
+        user-select: none;
+    }
 
         .add-album-btn {
             margin-top: 20px;
@@ -95,6 +97,12 @@
             text-align: center;
             font-size: 20px;
         }
+
+
+        .album.expanded {
+        transform: scale(1.1); /* Slightly larger */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for emphasis */
+    }
     </style>
 </head>
 <body>
@@ -115,7 +123,7 @@
     </div>
 
     <script>
-       const albums = JSON.parse(localStorage.getItem('albums')) || {};
+        const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
 function createAlbum() {
     const albumName = prompt('Enter album name:');
@@ -140,24 +148,27 @@ function renderAlbums() {
 
         let pressTimer;
 
-        // Touchstart event to detect long press
+        // Touchstart: Start the timer and add the "expanded" class
         album.addEventListener('touchstart', function (e) {
+            album.classList.add('expanded');
             pressTimer = setTimeout(() => {
                 // Long press detected
+                album.classList.remove('expanded');
                 if (confirm(`Do you want to delete the album "${albumName}"?`)) {
                     deleteAlbum(albumName);
                 }
             }, 800); // 800ms for long press detection
         });
 
-        // Clear timer if touch ends quickly (single press)
+        // Touchend: Clear timer and remove the "expanded" class
         album.addEventListener('touchend', function (e) {
             clearTimeout(pressTimer);
+            album.classList.remove('expanded');
         });
 
-        // Single-click handler
+        // Single-click: Open the album
         album.addEventListener('click', function (e) {
-            openAlbumPage(albumName);
+            if (!pressTimer) openAlbumPage(albumName);
         });
 
         albumGrid.appendChild(album);
