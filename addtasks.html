@@ -542,6 +542,16 @@
     cursor: pointer;
 }
 
+
+.modal-content ul li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    cursor: pointer;
+    touch-action: manipulation; /* Prevent default gestures interfering with touch */
+}
+
             </style>
             
             <button type="submit" class="save-btn">Save</button>
@@ -643,22 +653,18 @@ function hideModal(modal) {
     li.textContent = user;
     li.dataset.value = user;
 
-    // Add event listener to toggle the selected state
+    // Add pointerdown event listener for touch devices
     li.addEventListener("pointerdown", () => {
-        // Get the current selection value
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
         if (li.classList.contains("selected")) {
-            // Deselect the user
             li.classList.remove("selected");
             assignedToUsers = assignedToUsers.filter(u => u !== user);
         } else {
-            // Select the user
             li.classList.add("selected");
             assignedToUsers.push(user);
         }
 
-        // Update the hidden input and display text
         assignedToSelection.value = assignedToUsers.join(', ');
         assignedToDisplay.textContent = assignedToUsers.length > 0 
             ? `Assigned to: ${assignedToUsers.join(', ')}`
@@ -667,6 +673,7 @@ function hideModal(modal) {
 
     userList.appendChild(li);
 });
+
 
 
 
