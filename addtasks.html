@@ -338,7 +338,10 @@
 }
 
 
-
+.selected {
+    background-color: #007BFF !important; /* Blue background */
+    color: white; /* White text */
+}
 
 
 
@@ -635,36 +638,37 @@ function hideModal(modal) {
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
         // Populate the modal with users
-        users.forEach(user => {
+       // Populate the modal with users
+users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
-    
+
     // Add event listener to toggle the selected state
-   li.addEventListener("click", () => {
-    // Get the current selection value
-    let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
+    li.addEventListener("click", () => {
+        // Get the current selection value
+        let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
-    if (li.classList.contains("selected")) {
-        // Deselect the user
-        li.classList.remove("selected");
-        assignedToUsers = assignedToUsers.filter(u => u !== user);
-    } else {
-        // Select the user
-        li.classList.add("selected");
-        assignedToUsers.push(user);
-    }
+        if (li.classList.contains("selected")) {
+            // Deselect the user
+            li.classList.remove("selected");
+            assignedToUsers = assignedToUsers.filter(u => u !== user);
+        } else {
+            // Select the user
+            li.classList.add("selected");
+            assignedToUsers.push(user);
+        }
 
-    // Update the hidden input and display text
-    assignedToSelection.value = assignedToUsers.join(', ');
-    assignedToDisplay.textContent = assignedToUsers.length > 0 
-        ? `Assigned to: ${assignedToUsers.join(', ')}`
-        : 'Select users';
-});
+        // Update the hidden input and display text
+        assignedToSelection.value = assignedToUsers.join(', ');
+        assignedToDisplay.textContent = assignedToUsers.length > 0 
+            ? `Assigned to: ${assignedToUsers.join(', ')}`
+            : 'Select users';
+    });
 
-    
     userList.appendChild(li);
 });
+
 
 
         // Show the modal when the "Assigned to" section is clicked
