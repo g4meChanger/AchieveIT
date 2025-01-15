@@ -278,7 +278,7 @@
 
 /* Default Style for Unselected Users */
 #userList li {
-    background-color: transparent; /* Default background */
+    background-color: #f1f1f1; /* Default background */
     color: black; /* Default text color */
     font-size: 16px; /* Adjust as needed */
     padding: 10px; /* Add padding for better touch interaction */
@@ -289,7 +289,7 @@
 
 /* Style for Hover State */
 #userList li:hover {
-    background-color: #f1f1f1; /* Light grey background */
+    background-color: #d3d3d3; /* Light grey background */
     color: black; /* Ensure hover text remains visible */
 }
 
@@ -657,12 +657,15 @@ function hideModal(modal) {
         const users = JSON.parse(localStorage.getItem("users")) || [];
 
         // Populate the modal with users
-        users.forEach(user => {
+users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
 
-    const toggleSelection = () => {
+    // Function to toggle selection
+    const toggleSelection = (event) => {
+        event.preventDefault(); // Prevent default touch behaviors (e.g., scrolling)
+        
         // Get the current selection value
         let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
 
@@ -687,12 +690,13 @@ function hideModal(modal) {
             : 'Select users';
     };
 
-    // Add both click and touchend listeners for cross-device compatibility
+    // Attach both click and touchstart event listeners
     li.addEventListener("click", toggleSelection);
-    li.addEventListener("touchend", toggleSelection);
+    li.addEventListener("touchstart", toggleSelection);
 
     userList.appendChild(li);
 });
+
 
 
 
