@@ -115,38 +115,66 @@
     </div>
 
     <script>
-        const albums = JSON.parse(localStorage.getItem('albums')) || {};
+       const albums = JSON.parse(localStorage.getItem('albums')) || {};
 
-        function createAlbum() {
-            const albumName = prompt('Enter album name:');
-            if (albumName && !albums[albumName]) {
-                albums[albumName] = [];
-                localStorage.setItem('albums', JSON.stringify(albums));
-                renderAlbums();
-            } else if (albums[albumName]) {
-                alert('Album already exists!');
-            } else {
-                alert('Invalid album name.');
-            }
-        }
-
-        function renderAlbums() {
-            const albumGrid = document.getElementById('albumGrid');
-            albumGrid.innerHTML = '';
-            Object.keys(albums).forEach(albumName => {
-                const album = document.createElement('div');
-                album.className = 'album';
-                album.textContent = albumName;
-                album.onclick = () => openAlbumPage(albumName);
-                albumGrid.appendChild(album);
-            });
-        }
-
-        function openAlbumPage(albumName) {
-            window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
-        }
-
+function createAlbum() {
+    const albumName = prompt('Enter album name:');
+    if (albumName && !albums[albumName]) {
+        albums[albumName] = [];
+        localStorage.setItem('albums', JSON.stringify(albums));
         renderAlbums();
+    } else if (albums[albumName]) {
+        alert('Album already exists!');
+    } else {
+        alert('Invalid album name.');
+    }
+}
+
+function renderAlbums() {
+    const albumGrid = document.getElementById('albumGrid');
+    albumGrid.innerHTML = '';
+    Object.keys(albums).forEach(albumName => {
+        const album = document.createElement('div');
+        album.className = 'album';
+        album.textContent = albumName;
+
+        let pressTimer;
+
+        // Touchstart event to detect long press
+        album.addEventListener('touchstart', function (e) {
+            pressTimer = setTimeout(() => {
+                // Long press detected
+                if (confirm(`Do you want to delete the album "${albumName}"?`)) {
+                    deleteAlbum(albumName);
+                }
+            }, 800); // 800ms for long press detection
+        });
+
+        // Clear timer if touch ends quickly (single press)
+        album.addEventListener('touchend', function (e) {
+            clearTimeout(pressTimer);
+        });
+
+        // Single-click handler
+        album.addEventListener('click', function (e) {
+            openAlbumPage(albumName);
+        });
+
+        albumGrid.appendChild(album);
+    });
+}
+
+function deleteAlbum(albumName) {
+    delete albums[albumName];
+    localStorage.setItem('albums', JSON.stringify(albums));
+    renderAlbums();
+}
+
+function openAlbumPage(albumName) {
+    window.location.href = `album.html?album=${encodeURIComponent(albumName)}`;
+}
+
+renderAlbums();
     </script>
 </body>
 </html>
