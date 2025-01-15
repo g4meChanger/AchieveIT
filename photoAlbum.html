@@ -124,7 +124,7 @@
     </div>
 
     <script>
-       const albums = JSON.parse(localStorage.getItem('albums')) || {};
+      const albums = JSON.parse(localStorage.getItem('albums')) || {};
 let longPressTimeout;
 let isLongPress = false; // Flag to distinguish long press from click
 
@@ -149,20 +149,18 @@ function renderAlbums() {
         album.className = 'album';
         album.textContent = albumName;
 
-        // Handle click to open album
-        album.onclick = () => {
-            // Open the album only if it wasn't a long press
+        // Add event listeners
+        album.addEventListener('touchstart', (event) => startLongPress(albumName, event), { passive: false });
+        album.addEventListener('mousedown', (event) => startLongPress(albumName, event));
+        album.addEventListener('touchend', cancelLongPress);
+        album.addEventListener('mouseup', cancelLongPress);
+        album.addEventListener('mouseleave', cancelLongPress);
+
+        album.addEventListener('click', () => {
             if (!isLongPress) {
                 openAlbumPage(albumName);
             }
-        };
-
-        // Handle long press for deletion
-        album.ontouchstart = (event) => startLongPress(albumName, event);
-        album.onmousedown = (event) => startLongPress(albumName, event);
-        album.ontouchend = cancelLongPress;
-        album.onmouseup = cancelLongPress;
-        album.onmouseleave = cancelLongPress;
+        });
 
         albumGrid.appendChild(album);
     });
@@ -173,7 +171,7 @@ function openAlbumPage(albumName) {
 }
 
 function startLongPress(albumName, event) {
-    event.preventDefault(); // Prevent default browser behavior
+    event.preventDefault(); // Prevent default touch behavior on mobile
     isLongPress = false; // Reset flag
     longPressTimeout = setTimeout(() => {
         isLongPress = true; // Set flag to true if it's a long press
@@ -185,7 +183,7 @@ function startLongPress(albumName, event) {
 
 function cancelLongPress() {
     clearTimeout(longPressTimeout); // Cancel long press if the user releases early
-    isLongPress = false; // Ensure the flag is reset after any release
+    isLongPress = false; // Ensure the flag is reset
 }
 
 function deleteAlbum(albumName) {
@@ -196,6 +194,7 @@ function deleteAlbum(albumName) {
 
 // Initial render
 renderAlbums();
+
     </script>
 </body>
 </html>
