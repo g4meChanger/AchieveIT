@@ -59,10 +59,12 @@
         cursor: pointer;
         position: relative;
         transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth animation */
-        user-select: none;
-        -webkit-user-drag: none; /* Prevent dragging */
-    touch-action: manipulation; /* Disable text highlighting on touch devices */
-    pointer-events: all; /* Ensure pointer events are handled correctly */
+        user-select: none; /* Prevent text selection */
+    -webkit-user-select: none; /* Safari-specific user selection */
+    -webkit-user-drag: none; /* Prevent drag interactions */
+    -webkit-touch-callout: none; /* Disable touch callout (context menu) */
+    touch-action: manipulation; /* Disable default touch behavior */
+    pointer-events: all; /* Ensure pointer events work as expected */
     }
 
         .add-album-btn {
@@ -127,10 +129,20 @@
 
     <script>
 
+
+document.addEventListener('touchstart', function (e) {
+    if (e.target.classList.contains('album')) {
+        e.preventDefault(); // Prevent default touch behavior
+    }
+});
+
         // Prevent context menu globally
-document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-}, false);
+        document.addEventListener('contextmenu', function (e) {
+    if (e.target.classList.contains('album')) {
+        e.preventDefault(); // Suppress context menu specifically for albums
+    }
+});
+
 
 
          const albums = JSON.parse(localStorage.getItem('albums')) || {};
