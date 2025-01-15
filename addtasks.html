@@ -338,11 +338,10 @@
 }
 
 
-.selected {
-    background-color: #007BFF !important; /* Blue background */
-    color: white; /* White text */ 
-    transition: background-color 0.2s ease-in-out; /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-}
+
+
+
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 
 
@@ -354,7 +353,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x7</div>
+        <div class="title">Add Task x8</div>
     </div>
 
     <div class="content">
@@ -543,6 +542,18 @@
     cursor: pointer;
 }
 
+li {
+    background-color: transparent; /* Default background */
+    color: black; /* Default text color */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth transition */
+}
+
+li:hover {
+    background-color: #f1f1f1; /* Light hover background */
+}
+
+
             </style>
             
             <button type="submit" class="save-btn">Save</button>
@@ -644,44 +655,42 @@ function hideModal(modal) {
 const selectedUsers = new Set();
 
 // Populate the user list dynamically
+// Populate the modal with users
 users.forEach(user => {
     const li = document.createElement("li");
     li.textContent = user;
     li.dataset.value = user;
+
+    li.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent bubbling issues
+
+        // Get current state of assigned users
+        let assignedToUsers = assignedToSelection.value ? assignedToSelection.value.split(', ') : [];
+
+        if (li.classList.contains("selected")) {
+            // Unselect the user
+            li.classList.remove("selected");
+            li.style.backgroundColor = ""; // Reset to default color
+            li.style.color = ""; // Reset text color
+            assignedToUsers = assignedToUsers.filter(u => u !== user);
+        } else {
+            // Select the user
+            li.classList.add("selected");
+            li.style.backgroundColor = "#007BFF"; // Set to blue
+            li.style.color = "white"; // Ensure text is readable
+            assignedToUsers.push(user);
+        }
+
+        // Update the state
+        assignedToSelection.value = assignedToUsers.join(', ');
+        assignedToDisplay.textContent = assignedToUsers.length > 0
+            ? `Assigned to: ${assignedToUsers.join(', ')}`
+            : 'Select users';
+    });
+
     userList.appendChild(li);
 });
 
-// Event delegation: attach one event listener to the parent container
-userList.addEventListener("click", (e) => {
-    const li = e.target;
-
-    // Ensure the clicked element is a list item
-    if (li.tagName === "LI") {
-        const user = li.dataset.value;
-
-        if (selectedUsers.has(user)) {
-            // If the user is already selected, deselect it
-            selectedUsers.delete(user);
-            li.classList.remove("selected");
-        } else {
-            // Otherwise, select the user
-            selectedUsers.add(user);
-            li.classList.add("selected");
-        }
-
-        // Update the hidden input and display
-        updateSelectionDisplay();
-    }
-});
-
-// Function to update the hidden input and display
-function updateSelectionDisplay() {
-    const selectedArray = Array.from(selectedUsers); // Convert Set to Array
-    assignedToSelection.value = selectedArray.join(', ');
-    assignedToDisplay.textContent = selectedArray.length > 0
-        ? `Assigned to: ${selectedArray.join(', ')}`
-        : 'Select users';
-}
 
 
 
