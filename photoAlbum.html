@@ -149,18 +149,22 @@ function renderAlbums() {
         album.className = 'album';
         album.textContent = albumName;
 
-        // Add event listeners
+        // Add touch and click event listeners
         album.addEventListener('touchstart', (event) => startLongPress(albumName, event), { passive: false });
-        album.addEventListener('mousedown', (event) => startLongPress(albumName, event));
-        album.addEventListener('touchend', cancelLongPress);
-        album.addEventListener('mouseup', cancelLongPress);
-        album.addEventListener('mouseleave', cancelLongPress);
-
-        album.addEventListener('click', () => {
+        album.addEventListener('touchend', (event) => {
+            cancelLongPress();
             if (!isLongPress) {
-                openAlbumPage(albumName);
+                openAlbumPage(albumName); // Open album on short tap
             }
         });
+        album.addEventListener('mousedown', (event) => startLongPress(albumName, event));
+        album.addEventListener('mouseup', (event) => {
+            cancelLongPress();
+            if (!isLongPress) {
+                openAlbumPage(albumName); // Open album on click
+            }
+        });
+        album.addEventListener('mouseleave', cancelLongPress);
 
         albumGrid.appendChild(album);
     });
@@ -171,7 +175,7 @@ function openAlbumPage(albumName) {
 }
 
 function startLongPress(albumName, event) {
-    event.preventDefault(); // Prevent default touch behavior on mobile
+    event.preventDefault(); // Prevent default browser behavior
     isLongPress = false; // Reset flag
     longPressTimeout = setTimeout(() => {
         isLongPress = true; // Set flag to true if it's a long press
@@ -183,7 +187,7 @@ function startLongPress(albumName, event) {
 
 function cancelLongPress() {
     clearTimeout(longPressTimeout); // Cancel long press if the user releases early
-    isLongPress = false; // Ensure the flag is reset
+    isLongPress = false; // Reset flag to ensure it does not interfere
 }
 
 function deleteAlbum(albumName) {
@@ -194,6 +198,7 @@ function deleteAlbum(albumName) {
 
 // Initial render
 renderAlbums();
+
 
     </script>
 </body>

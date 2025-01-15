@@ -394,19 +394,36 @@
 
 
 
-        function triggerPrank() {
+
+
+
+
+
+
+
+
+
+
+
+
+// Preload the screaming sound
+const screamAudio = new Audio('scream.mp3');
+screamAudio.load(); // Preload the audio file into memory
+
+function triggerPrank() {
     const overlay = document.getElementById('scaryOverlay');
     overlay.style.display = 'flex';
 
-    // Play the screaming sound
-    const audio = new Audio('scream.mp3'); // Ensure scream.mp3 exists in your project
-    audio.play();
+    // Play the preloaded screaming sound
+    screamAudio.currentTime = 0; // Reset to the start in case it's played again
+    screamAudio.play();
 
     // Hide the prank overlay after 3 seconds
     setTimeout(() => {
         overlay.style.display = 'none';
     }, 3000);
 }
+
 
     </script>
 
