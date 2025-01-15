@@ -354,7 +354,7 @@
 
     <div class="header">
         <i class="fas fa-bars menu-icon"></i>
-        <div class="title">Add Task x5</div>
+        <div class="title">Add Task x6</div>
     </div>
 
     <div class="content">
@@ -653,47 +653,26 @@ function hideModal(modal) {
 
         if (li.classList.contains("selected")) {
             // Unselect the user
+            li.classList.remove("selected");
             assignedToUsers = assignedToUsers.filter(u => u !== user);
         } else {
             // Select the user
+            li.classList.add("selected");
             assignedToUsers.push(user);
         }
 
-        // Update the state
+        // Update the hidden input value
         assignedToSelection.value = assignedToUsers.join(', ');
+
+        // Update the display text
         assignedToDisplay.textContent = assignedToUsers.length > 0
             ? `Assigned to: ${assignedToUsers.join(', ')}`
             : 'Select users';
-
-        // Forcefully update visuals
-        updateUserListVisuals(assignedToUsers);
-        enforceVisualUpdate(li);
     });
 
+    // Append the list item to the user list
     userList.appendChild(li);
 });
-
-// Helper function to enforce DOM updates
-function enforceVisualUpdate(element) {
-    element.style.transition = 'none'; // Reset transitions
-    element.offsetHeight; // Trigger a reflow to flush styles
-    element.style.transition = ''; // Restore transitions
-}
-
-// Function to synchronize the DOM visuals
-function updateUserListVisuals(assignedToUsers) {
-    const allListItems = userList.querySelectorAll("li");
-
-    allListItems.forEach(item => {
-        if (assignedToUsers.includes(item.dataset.value)) {
-            item.classList.add("selected");
-        } else {
-            item.classList.remove("selected");
-        }
-    });
-}
-
-
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
