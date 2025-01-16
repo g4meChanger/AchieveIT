@@ -312,7 +312,6 @@
     .task-item.swiped .delete-btn {
         right: 0;
     }
-    
     </style>
 </head>
 <body>
@@ -523,48 +522,20 @@ screamAudio.load(); // Preload the audio file into memory
 
 function triggerPrank() {
     const overlay = document.getElementById('scaryOverlay');
-    overlay.style.display = 'flex';
 
-    // Play the audio immediately
-    screamAudio.currentTime = 0; // Reset the scream audio to the start
+    // Play the preloaded screaming sound immediately
+    screamAudio.currentTime = 0; // Reset to the start in case it's played again
     screamAudio.play();
 
-    // Create the first image element
-    const initialImage = document.createElement('img');
-    initialImage.src = 'igm1.png'; // The first image to show
-    initialImage.alt = 'Initial Scary Face';
-    initialImage.style.width = 'auto'; // Maintain original aspect ratio
-    initialImage.style.height = 'auto'; // Maintain original aspect ratio
-    initialImage.style.maxWidth = '100vw'; // Ensure the image fits within the viewport width
-    initialImage.style.maxHeight = '100vh'; // Ensure the image fits within the viewport height
-    initialImage.style.objectFit = 'contain'; // Prevent cropping
-    initialImage.style.margin = 'auto'; // Center the image
-    initialImage.style.position = 'absolute'; // Position it relative to the overlay
-    initialImage.style.top = '0';
-    initialImage.style.left = '0';
-    initialImage.style.right = '0';
-    initialImage.style.bottom = '0';
-    initialImage.style.animation = 'none'; // Explicitly disable animations for igm1
-    overlay.innerHTML = ''; // Clear existing content
-    overlay.appendChild(initialImage);
+    // Initially display the "igm1" image without the zoom effect
+    overlay.innerHTML = '<img src="igm1.png" alt="Initial Image" style="transform: none; animation: none;">';
+    overlay.style.display = 'flex';
 
-    // Switch to the second image after 0.5 seconds
+    // Show the "screaming.png" image with zoom effect after 0.5 seconds
     setTimeout(() => {
-        overlay.innerHTML = ''; // Clear the initial image
-        const finalImage = document.createElement('img');
-        finalImage.src = 'screaming.png'; // The final scary image
-        finalImage.alt = 'Final Scary Face';
-        finalImage.style.width = 'auto'; // Default size for zoom effect
-        finalImage.style.height = 'auto';
-        finalImage.style.animation = 'zoomIn 2s ease-out forwards'; // Apply zoom-in animation
-        finalImage.style.margin = 'auto'; // Center the final image as well
-        finalImage.style.position = 'absolute'; // Position it relative to the overlay
-        finalImage.style.top = '0';
-        finalImage.style.left = '0';
-        finalImage.style.right = '0';
-        finalImage.style.bottom = '0';
-        overlay.appendChild(finalImage);
-    }, 500); // Switch images after 0.5 seconds
+        overlay.innerHTML = '<img src="screaming.png" alt="Scary Face">';
+        overlay.querySelector('img').style.animation = 'zoomIn 2s ease-out forwards';
+    }, 500);
 
     // Hide the prank overlay after 3 seconds
     setTimeout(() => {
